@@ -15,88 +15,143 @@
         .player-card {
             transition: all 0.3s ease;
         }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: #7c3aed;
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(0,0,0,0.2);
+        }
     </style>
 </head>
-<body class="min-h-screen text-slate-900 pb-12">
+<body class="min-h-screen text-slate-900 pb-16">
 
-    <!-- Header (Scrollable) -->
+    <!-- Header Informativo -->
     <header class="bg-slate-900 text-white shadow-lg">
         <div class="max-w-4xl mx-auto p-6 text-center">
-            <h1 class="text-2xl md:text-3xl font-black italic tracking-tighter text-yellow-400">
-                PADRES RAMBLETA CHAMPIONSHIP
+            <h1 class="text-xl md:text-3xl font-black italic tracking-tighter text-yellow-400 uppercase">
+                Padres Rambleta Championship
             </h1>
             <div class="flex justify-center gap-4 mt-2 text-slate-400 text-[10px] font-bold uppercase tracking-widest">
-                <span class="flex items-center gap-1"><i data-lucide="map-pin" class="w-3 h-3 text-yellow-500"></i> Rambleta Stadium</span>
-                <span class="flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3 text-yellow-500"></i> Hoy, 20:30h</span>
+                <span class="flex items-center gap-1"><i data-lucide="map-pin" class="w-3 h-3"></i> Rambleta Stadium</span>
+                <span class="flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3"></i> Hoy, 20:30h</span>
             </div>
         </div>
     </header>
 
     <main class="max-w-4xl mx-auto p-4 space-y-6">
         
-        <!-- Dashboard de Control -->
+        <!-- Marcador de Goles -->
+        <section class="bg-white rounded-3xl p-6 shadow-md border border-slate-200">
+            <div class="flex items-center justify-between gap-4">
+                <!-- Goles Amarillo -->
+                <div class="flex-1 flex flex-col items-center gap-2">
+                    <span class="text-[10px] font-black uppercase text-yellow-600">Amarillo</span>
+                    <div class="flex items-center gap-3">
+                        <button onclick="changeScore('yellow', -1)" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200 transition-colors">
+                            <i data-lucide="minus" class="w-4 h-4"></i>
+                        </button>
+                        <span id="score-yellow" class="text-5xl font-black tabular-nums">0</span>
+                        <button onclick="changeScore('yellow', 1)" class="w-8 h-8 rounded-full bg-yellow-400 flex items-center justify-center text-yellow-900 hover:bg-yellow-500 transition-colors shadow-sm">
+                            <i data-lucide="plus" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="text-slate-300 font-black text-2xl mt-4">VS</div>
+
+                <!-- Goles Naranja -->
+                <div class="flex-1 flex flex-col items-center gap-2">
+                    <span class="text-[10px] font-black uppercase text-orange-600">Naranja</span>
+                    <div class="flex items-center gap-3">
+                        <button onclick="changeScore('orange', -1)" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200 transition-colors">
+                            <i data-lucide="minus" class="w-4 h-4"></i>
+                        </button>
+                        <span id="score-orange" class="text-5xl font-black tabular-nums">0</span>
+                        <button onclick="changeScore('orange', 1)" class="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center text-white hover:bg-orange-600 transition-colors shadow-sm">
+                            <i data-lucide="plus" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Cronómetro y Simulador -->
         <div class="grid md:grid-cols-2 gap-4">
             <!-- Reloj -->
-            <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
-                <div class="flex items-center justify-between mb-1">
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200">
+                <div class="flex items-center justify-between mb-2">
                     <span class="text-[10px] font-black uppercase text-slate-400 tracking-tight">Tiempo de Juego</span>
                     <i data-lucide="timer" class="text-indigo-500 w-4 h-4"></i>
                 </div>
-                <div id="game-time" class="text-5xl font-black text-slate-800 tabular-nums text-center mb-4">00:00</div>
+                <div id="game-time" class="text-6xl font-black text-slate-800 tabular-nums text-center mb-4 tracking-tighter">00:00</div>
                 <div class="flex gap-2">
-                    <button onclick="toggleTimer()" id="btn-timer" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all">
+                    <button onclick="toggleTimer()" id="btn-timer" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-3.5 rounded-2xl font-bold flex items-center justify-center gap-2 transition-all shadow-lg shadow-indigo-100">
                         <i data-lucide="play" id="icon-play" class="w-4 h-4"></i> <span id="text-play">Empezar</span>
                     </button>
-                    <button onclick="resetTimer()" class="bg-slate-100 hover:bg-slate-200 text-slate-600 px-4 rounded-xl transition-all border border-slate-200">
+                    <button onclick="resetTimer()" class="bg-slate-100 hover:bg-slate-200 text-slate-600 px-5 rounded-2xl transition-all border border-slate-200">
                         <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
                     </button>
                 </div>
             </div>
 
             <!-- Simulador -->
-            <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200">
                 <div class="flex items-center justify-between mb-4">
-                    <span class="text-[10px] font-black uppercase text-slate-400">Simulador de Turnos</span>
-                    <span id="label-sim-min" class="text-sm font-black text-purple-600 bg-purple-50 px-2 py-0.5 rounded">Minuto 0</span>
+                    <span class="text-[10px] font-black uppercase text-slate-400">Rotación Futura</span>
+                    <span id="label-sim-min" class="text-sm font-black text-purple-600 bg-purple-50 px-2.5 py-1 rounded-lg">Minuto 0</span>
                 </div>
                 <input type="range" id="sim-slider" min="0" max="60" step="5" value="0" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-purple-600 mb-2">
-                <p class="text-[9px] text-slate-400 italic text-center leading-tight tracking-tight">Mueve para ver quién entra al campo o va a portería cada 5 min.</p>
+                <p class="text-[9px] text-slate-400 italic text-center leading-tight">Mueve la barra para prever quién va a portería o banquillo.</p>
             </div>
         </div>
 
-        <!-- Equipos -->
+        <!-- Lista de Equipos -->
         <div class="grid md:grid-cols-2 gap-6">
-            
             <!-- Equipo Amarillo -->
             <div class="space-y-3">
-                <div class="bg-yellow-400 p-3 rounded-xl shadow-md flex items-center justify-between border-b-4 border-yellow-600">
-                    <h2 class="font-black text-yellow-900 italic text-sm uppercase">EQUIPO AMARILLO 💛</h2>
+                <div class="bg-yellow-400 p-4 rounded-2xl shadow-md border-b-4 border-yellow-600 flex justify-between items-center">
+                    <h2 class="font-black text-yellow-900 italic text-sm uppercase">Equipo Amarillo 💛</h2>
                 </div>
                 <div id="team-yellow-list" class="space-y-2"></div>
             </div>
 
             <!-- Equipo Naranja -->
             <div class="space-y-3">
-                <div class="bg-orange-500 p-3 rounded-xl shadow-md flex items-center justify-between border-b-4 border-orange-700">
-                    <h2 class="font-black text-white italic text-sm uppercase">EQUIPO NARANJA 🧡</h2>
+                <div class="bg-orange-500 p-4 rounded-2xl shadow-md border-b-4 border-orange-700 flex justify-between items-center text-white">
+                    <h2 class="font-black italic text-sm uppercase">Equipo Naranja 🧡</h2>
                 </div>
                 <div id="team-orange-list" class="space-y-2"></div>
             </div>
-
         </div>
     </main>
 
     <script>
-        // ORDEN DE JUGADORES ESTRICTO
+        // ORDEN DE JUGADORES (Mantenido estrictamente)
         const playersYellow = ["Albert M", "Iban", "Michele", "Victor", "Joan", "Robert"];
         const playersOrange = ["Mikel", "Guillermo", "Gabriel", "Jordi", "Mike", "Giacomo"];
 
         let seconds = 0;
+        let scoreYellow = 0;
+        let scoreOrange = 0;
         let timerInterval = null;
         let isSimulating = false;
 
         const slider = document.getElementById('sim-slider');
         const labelSim = document.getElementById('label-sim-min');
+
+        // Manejo de Goles
+        function changeScore(team, val) {
+            if (team === 'yellow') {
+                scoreYellow = Math.max(0, scoreYellow + val);
+                document.getElementById('score-yellow').innerText = scoreYellow;
+            } else {
+                scoreOrange = Math.max(0, scoreOrange + val);
+                document.getElementById('score-orange').innerText = scoreOrange;
+            }
+        }
 
         slider.addEventListener('input', (e) => {
             isSimulating = true;
@@ -107,7 +162,7 @@
         });
 
         function updateDisplay(currentSeconds) {
-            const iteration = Math.floor(currentSeconds / 300); // 5 minutos = 300 segundos
+            const iteration = Math.floor(currentSeconds / 300); // 5 min = 300 seg
             
             renderTeam('team-yellow-list', playersYellow, iteration, 'yellow');
             renderTeam('team-orange-list', playersOrange, iteration, 'orange');
@@ -128,9 +183,7 @@
 
             let displayOrder = [...originalPlayers];
             
-            // LÓGICA DE ROTACIÓN:
-            // Cada 5 min: El 6 entra a jugar, el 5 sale al banquillo.
-            // Para lograr esto en código de forma circular:
+            // Rotación circular: el último entra al inicio
             for(let i = 0; i < iter; i++) {
                 let benchPlayer = displayOrder.pop(); 
                 displayOrder.unshift(benchPlayer);   
@@ -142,23 +195,23 @@
                 let bgColor = "bg-white border-slate-200 shadow-sm";
                 let tagColor = "bg-slate-100 text-slate-500";
 
-                // Index 2 (Jugador 3 originalmente) es Portero
+                // Index 2 (Jugador 3 originalmente) es el Portero
                 if (index === 2) {
                     role = "Portero";
                     icon = "shield";
                     bgColor = color === 'yellow' ? "bg-yellow-50 border-yellow-300 ring-1 ring-yellow-400/30" : "bg-orange-50 border-orange-300 ring-1 ring-orange-500/30";
                     tagColor = color === 'yellow' ? "bg-yellow-500 text-white" : "bg-orange-600 text-white";
                 } 
-                // Index 5 (Jugador 6 originalmente) es Banquillo
+                // Index 5 (Jugador 6 originalmente) es el Banquillo
                 else if (index === 5) {
                     role = "Banquillo";
-                    icon = "pause-circle";
-                    bgColor = "bg-slate-50 border-dashed border-slate-300 opacity-60";
+                    icon = "coffee";
+                    bgColor = "bg-slate-50/80 border-dashed border-slate-300 opacity-60";
                     tagColor = "bg-slate-400 text-white";
                 }
 
                 const card = document.createElement('div');
-                card.className = `player-card flex items-center justify-between p-3 rounded-xl border ${bgColor}`;
+                card.className = `player-card flex items-center justify-between p-3.5 rounded-2xl border ${bgColor}`;
                 card.innerHTML = `
                     <div class="flex items-center gap-3">
                         <div class="p-1.5 rounded-lg ${index === 2 ? 'bg-white shadow-sm' : ''}">
@@ -204,13 +257,18 @@
         }
 
         function resetTimer() {
+            if(!confirm("¿Deseas reiniciar el tiempo y los goles?")) return;
             clearInterval(timerInterval);
             timerInterval = null;
             seconds = 0;
+            scoreYellow = 0;
+            scoreOrange = 0;
             isSimulating = false;
+            document.getElementById('score-yellow').innerText = "0";
+            document.getElementById('score-orange').innerText = "0";
             document.getElementById('text-play').innerText = "Empezar";
             document.getElementById('icon-play').setAttribute('data-lucide', 'play');
-            document.getElementById('btn-timer').className = "flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all shadow-md";
+            document.getElementById('btn-timer').className = "flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-3.5 rounded-2xl font-bold flex items-center justify-center gap-2 transition-all shadow-lg";
             slider.value = 0;
             labelSim.innerText = "Minuto 0";
             updateDisplay(0);
