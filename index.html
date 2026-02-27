@@ -8,113 +8,88 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        .stadium-bg {
+        body { 
+            font-family: 'Inter', sans-serif; 
             background-color: #f8fafc;
-            background-image: radial-gradient(#e2e8f0 0.5px, transparent 0.5px);
-            background-size: 20px 20px;
+        }
+        .player-card {
+            transition: all 0.3s ease;
         }
     </style>
 </head>
-<body class="stadium-bg min-h-screen text-slate-900 pb-10">
+<body class="min-h-screen text-slate-900 pb-12">
 
-    <!-- Header Evento -->
-    <header class="bg-slate-900 text-white shadow-2xl">
-        <div class="max-w-6xl mx-auto p-6 md:p-8">
-            <div class="flex flex-col md:flex-row justify-between items-center gap-6">
-                <div class="text-center md:text-left">
-                    <h1 class="text-3xl md:text-5xl font-black italic tracking-tighter text-yellow-400 mb-2">
-                        PADRES RAMBLETA CHAMPIONSHIP
-                    </h1>
-                    <div class="flex flex-wrap justify-center md:justify-start gap-4 text-slate-300 font-medium">
-                        <span class="flex items-center gap-1"><i data-lucide="calendar" class="w-4 h-4 text-yellow-400"></i> Hoy, 20:30h</span>
-                        <span class="flex items-center gap-1"><i data-lucide="map-pin" class="w-4 h-4 text-yellow-400"></i> Rambleta Stadium</span>
-                    </div>
-                </div>
-                <div class="bg-slate-800 p-4 rounded-2xl border border-slate-700 text-center min-w-[150px]">
-                    <p class="text-[10px] font-bold text-slate-400 uppercase mb-1">Rotación cada</p>
-                    <p class="text-2xl font-black text-white">5 MIN</p>
-                </div>
+    <!-- Header (Scrollable) -->
+    <header class="bg-slate-900 text-white shadow-lg">
+        <div class="max-w-4xl mx-auto p-6 text-center">
+            <h1 class="text-2xl md:text-3xl font-black italic tracking-tighter text-yellow-400">
+                PADRES RAMBLETA CHAMPIONSHIP
+            </h1>
+            <div class="flex justify-center gap-4 mt-2 text-slate-400 text-[10px] font-bold uppercase tracking-widest">
+                <span class="flex items-center gap-1"><i data-lucide="map-pin" class="w-3 h-3 text-yellow-500"></i> Rambleta Stadium</span>
+                <span class="flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3 text-yellow-500"></i> Hoy, 20:30h</span>
             </div>
         </div>
     </header>
 
-    <main class="max-w-5xl mx-auto p-4 md:p-8 space-y-8">
+    <main class="max-w-4xl mx-auto p-4 space-y-6">
         
-        <!-- Controles: Reloj y Simulador -->
-        <div class="grid md:grid-cols-2 gap-6">
-            
-            <!-- Reloj Tiempo Real -->
-            <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 ring-1 ring-slate-100">
-                <div class="flex items-center justify-between mb-4">
-                    <span class="text-xs font-black uppercase tracking-widest text-slate-400 italic">Cronómetro</span>
-                    <i data-lucide="timer" class="text-indigo-500 w-5 h-5"></i>
+        <!-- Dashboard de Control -->
+        <div class="grid md:grid-cols-2 gap-4">
+            <!-- Reloj -->
+            <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
+                <div class="flex items-center justify-between mb-1">
+                    <span class="text-[10px] font-black uppercase text-slate-400 tracking-tight">Tiempo de Juego</span>
+                    <i data-lucide="timer" class="text-indigo-500 w-4 h-4"></i>
                 </div>
-                <div id="game-time" class="text-7xl font-black text-slate-800 tabular-nums mb-6 tracking-tight">00:00</div>
+                <div id="game-time" class="text-5xl font-black text-slate-800 tabular-nums text-center mb-4">00:00</div>
                 <div class="flex gap-2">
-                    <button onclick="toggleTimer()" id="btn-timer" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2 transition-all shadow-lg shadow-indigo-100">
-                        <i data-lucide="play" id="icon-play"></i> <span id="text-play">Iniciar Partido</span>
+                    <button onclick="toggleTimer()" id="btn-timer" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all">
+                        <i data-lucide="play" id="icon-play" class="w-4 h-4"></i> <span id="text-play">Empezar</span>
                     </button>
-                    <button onclick="resetTimer()" class="bg-slate-100 hover:bg-slate-200 text-slate-600 px-6 rounded-2xl transition-all">
-                        <i data-lucide="rotate-ccw"></i>
+                    <button onclick="resetTimer()" class="bg-slate-100 hover:bg-slate-200 text-slate-600 px-4 rounded-xl transition-all border border-slate-200">
+                        <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
                     </button>
                 </div>
             </div>
 
-            <!-- Simulador de Futuro -->
-            <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 ring-1 ring-slate-100">
+            <!-- Simulador -->
+            <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
                 <div class="flex items-center justify-between mb-4">
-                    <span class="text-xs font-black uppercase tracking-widest text-slate-400 italic">Previsualizar Turnos</span>
-                    <div class="bg-purple-100 text-purple-700 px-2 py-1 rounded-md text-[10px] font-bold">SIMULADOR</div>
+                    <span class="text-[10px] font-black uppercase text-slate-400">Simulador de Turnos</span>
+                    <span id="label-sim-min" class="text-sm font-black text-purple-600 bg-purple-50 px-2 py-0.5 rounded">Minuto 0</span>
                 </div>
-                <div class="space-y-6">
-                    <div>
-                        <div class="flex justify-between mb-4">
-                            <span class="text-sm font-bold text-slate-700">Estado en el minuto:</span>
-                            <span id="label-sim-min" class="text-xl font-black text-purple-600">0</span>
-                        </div>
-                        <input type="range" id="sim-slider" min="0" max="60" step="5" value="0" class="w-full h-3 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-purple-600">
-                    </div>
-                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                        <p class="text-[11px] text-slate-500 leading-relaxed">
-                            <span class="font-bold text-slate-700 uppercase block mb-1">¿Cómo funciona?</span>
-                            Desliza la barra para ver la rotación futura. El sistema moverá automáticamente al banquillo al campo y rotará al portero según tu configuración.
-                        </p>
-                    </div>
-                </div>
+                <input type="range" id="sim-slider" min="0" max="60" step="5" value="0" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-purple-600 mb-2">
+                <p class="text-[9px] text-slate-400 italic text-center leading-tight tracking-tight">Mueve para ver quién entra al campo o va a portería cada 5 min.</p>
             </div>
-
         </div>
 
         <!-- Equipos -->
-        <div class="grid md:grid-cols-2 gap-8">
+        <div class="grid md:grid-cols-2 gap-6">
             
             <!-- Equipo Amarillo -->
-            <div class="space-y-4">
-                <div class="flex items-center gap-3 bg-yellow-400 p-5 rounded-2xl shadow-xl shadow-yellow-100 border-b-4 border-yellow-500">
-                    <div class="text-3xl">💛</div>
-                    <h2 class="font-black text-yellow-900 italic text-xl">EQUIPO AMARILLO</h2>
+            <div class="space-y-3">
+                <div class="bg-yellow-400 p-3 rounded-xl shadow-md flex items-center justify-between border-b-4 border-yellow-600">
+                    <h2 class="font-black text-yellow-900 italic text-sm uppercase">EQUIPO AMARILLO 💛</h2>
                 </div>
-                <div id="team-yellow-list" class="space-y-3"></div>
+                <div id="team-yellow-list" class="space-y-2"></div>
             </div>
 
             <!-- Equipo Naranja -->
-            <div class="space-y-4">
-                <div class="flex items-center gap-3 bg-orange-500 p-5 rounded-2xl shadow-xl shadow-orange-100 border-b-4 border-orange-600">
-                    <div class="text-3xl">🧡</div>
-                    <h2 class="font-black text-white italic text-xl">EQUIPO NARANJA</h2>
+            <div class="space-y-3">
+                <div class="bg-orange-500 p-3 rounded-xl shadow-md flex items-center justify-between border-b-4 border-orange-700">
+                    <h2 class="font-black text-white italic text-sm uppercase">EQUIPO NARANJA 🧡</h2>
                 </div>
-                <div id="team-orange-list" class="space-y-3"></div>
+                <div id="team-orange-list" class="space-y-2"></div>
             </div>
 
         </div>
-
     </main>
 
     <script>
-        // Los jugadores se mantienen en este orden inicial
-        const playersYellow = ["Jugador 1", "Jugador 2", "Jugador 3", "Jugador 4", "Jugador 5", "Jugador 6"];
-        const playersOrange = ["Jugador 1", "Jugador 2", "Jugador 3", "Jugador 4", "Jugador 5", "Jugador 6"];
+        // ORDEN DE JUGADORES ESTRICTO
+        const playersYellow = ["Albert M", "Iban", "Michele", "Victor", "Joan", "Robert"];
+        const playersOrange = ["Mikel", "Guillermo", "Gabriel", "Jordi", "Mike", "Giacomo"];
 
         let seconds = 0;
         let timerInterval = null;
@@ -126,13 +101,13 @@
         slider.addEventListener('input', (e) => {
             isSimulating = true;
             const min = parseInt(e.target.value);
-            labelSim.innerText = min;
-            if (timerInterval) toggleTimer(); 
+            labelSim.innerText = `Minuto ${min}`;
+            if (timerInterval) pauseTimer(); 
             updateDisplay(min * 60);
         });
 
         function updateDisplay(currentSeconds) {
-            const iteration = Math.floor(currentSeconds / 300);
+            const iteration = Math.floor(currentSeconds / 300); // 5 minutos = 300 segundos
             
             renderTeam('team-yellow-list', playersYellow, iteration, 'yellow');
             renderTeam('team-orange-list', playersOrange, iteration, 'orange');
@@ -142,9 +117,8 @@
                 const secs = (currentSeconds % 60).toString().padStart(2, '0');
                 document.getElementById('game-time').innerText = `${mins}:${secs}`;
                 slider.value = Math.floor(currentSeconds / 60);
-                labelSim.innerText = slider.value;
+                labelSim.innerText = `Minuto ${slider.value}`;
             }
-
             lucide.createIcons();
         }
 
@@ -154,47 +128,45 @@
 
             let displayOrder = [...originalPlayers];
             
-            // Lógica de rotación solicitada: 
-            // Cada 5 min, el 6 entra, el 5 sale al banquillo, el 2 va de portero...
+            // LÓGICA DE ROTACIÓN:
+            // Cada 5 min: El 6 entra a jugar, el 5 sale al banquillo.
+            // Para lograr esto en código de forma circular:
             for(let i = 0; i < iter; i++) {
                 let benchPlayer = displayOrder.pop(); 
                 displayOrder.unshift(benchPlayer);   
             }
 
             displayOrder.forEach((name, index) => {
-                let role = "Jugador";
+                let role = "En Campo";
                 let icon = "user";
-                let bgColor = "bg-white border-slate-200";
-                let textColor = "text-slate-800";
-                let badge = "";
+                let bgColor = "bg-white border-slate-200 shadow-sm";
+                let tagColor = "bg-slate-100 text-slate-500";
 
-                // Posición 2 (originalmente Jugador 3) es Portero
+                // Index 2 (Jugador 3 originalmente) es Portero
                 if (index === 2) {
                     role = "Portero";
-                    icon = "shield-check";
-                    bgColor = color === 'yellow' ? "bg-yellow-50 border-yellow-400 ring-2 ring-yellow-400" : "bg-orange-50 border-orange-400 ring-2 ring-orange-400";
-                    badge = `<span class="bg-${color === 'yellow' ? 'yellow-500' : 'orange-500'} text-white text-[8px] font-black px-1.5 py-0.5 rounded ml-2">GK</span>`;
+                    icon = "shield";
+                    bgColor = color === 'yellow' ? "bg-yellow-50 border-yellow-300 ring-1 ring-yellow-400/30" : "bg-orange-50 border-orange-300 ring-1 ring-orange-500/30";
+                    tagColor = color === 'yellow' ? "bg-yellow-500 text-white" : "bg-orange-600 text-white";
                 } 
-                // Posición 5 (originalmente Jugador 6) es Banquillo
+                // Index 5 (Jugador 6 originalmente) es Banquillo
                 else if (index === 5) {
                     role = "Banquillo";
-                    icon = "user-minus";
+                    icon = "pause-circle";
                     bgColor = "bg-slate-50 border-dashed border-slate-300 opacity-60";
-                    textColor = "text-slate-400";
+                    tagColor = "bg-slate-400 text-white";
                 }
 
                 const card = document.createElement('div');
-                card.className = `flex items-center justify-between p-4 rounded-2xl border ${bgColor} ${textColor} transition-all duration-300`;
+                card.className = `player-card flex items-center justify-between p-3 rounded-xl border ${bgColor}`;
                 card.innerHTML = `
                     <div class="flex items-center gap-3">
-                        <div class="p-2 rounded-lg ${index === 2 ? 'bg-white' : 'bg-slate-50'}">
-                            <i data-lucide="${icon}" class="w-5 h-5"></i>
+                        <div class="p-1.5 rounded-lg ${index === 2 ? 'bg-white shadow-sm' : ''}">
+                            <i data-lucide="${icon}" class="w-4 h-4"></i>
                         </div>
-                        <span class="font-bold text-lg">${name}${badge}</span>
+                        <span class="font-bold text-slate-800 text-sm tracking-tight">${name}</span>
                     </div>
-                    <div class="text-right">
-                        <p class="text-[9px] font-black uppercase tracking-widest opacity-60">${role}</p>
-                    </div>
+                    <span class="text-[8px] font-black uppercase px-2 py-0.5 rounded-md ${tagColor}">${role}</span>
                 `;
                 container.appendChild(card);
             });
@@ -206,22 +178,29 @@
             const text = document.getElementById('text-play');
 
             if (timerInterval) {
-                clearInterval(timerInterval);
-                timerInterval = null;
-                text.innerText = "Reanudar Partido";
-                icon.setAttribute('data-lucide', 'play');
-                btn.className = btn.className.replace('bg-red-500', 'bg-indigo-600');
+                pauseTimer();
             } else {
                 isSimulating = false;
                 timerInterval = setInterval(() => {
                     seconds++;
                     updateDisplay(seconds);
                 }, 1000);
-                text.innerText = "Pausar Tiempo";
+                text.innerText = "Pausar";
                 icon.setAttribute('data-lucide', 'pause');
-                btn.className = btn.className.replace('bg-indigo-600', 'bg-red-500');
+                btn.classList.replace('bg-indigo-600', 'bg-red-500');
             }
             lucide.createIcons();
+        }
+
+        function pauseTimer() {
+            const btn = document.getElementById('btn-timer');
+            const icon = document.getElementById('icon-play');
+            const text = document.getElementById('text-play');
+            clearInterval(timerInterval);
+            timerInterval = null;
+            text.innerText = "Reanudar";
+            icon.setAttribute('data-lucide', 'play');
+            btn.classList.replace('bg-red-500', 'bg-indigo-600');
         }
 
         function resetTimer() {
@@ -229,15 +208,17 @@
             timerInterval = null;
             seconds = 0;
             isSimulating = false;
-            document.getElementById('text-play').innerText = "Iniciar Partido";
+            document.getElementById('text-play').innerText = "Empezar";
             document.getElementById('icon-play').setAttribute('data-lucide', 'play');
-            document.getElementById('btn-timer').className = "flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2 transition-all shadow-lg shadow-indigo-100";
+            document.getElementById('btn-timer').className = "flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all shadow-md";
             slider.value = 0;
-            labelSim.innerText = "0";
+            labelSim.innerText = "Minuto 0";
             updateDisplay(0);
         }
 
+        // Carga inicial
         updateDisplay(0);
     </script>
 </body>
 </html>
+
