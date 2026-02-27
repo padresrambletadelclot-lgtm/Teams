@@ -3,83 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gran Partido de Padres - Rotaciones</title>
+    <title>Simulador de Rotaciones - Partido de Padres</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
         body { font-family: 'Inter', sans-serif; }
+        input[type=range]::-webkit-slider-runnable-track {
+            background: #e2e8f0;
+            border-radius: 10px;
+            height: 8px;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            background: #4f46e5;
+            cursor: pointer;
+            margin-top: -8px;
+            box-shadow: 0 0 10px rgba(79, 70, 229, 0.4);
+        }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen">
+<body class="bg-slate-50 min-h-screen text-slate-900">
 
     <!-- Navbar -->
-    <nav class="bg-slate-900 text-white p-4 shadow-md">
+    <nav class="bg-indigo-700 text-white p-4 shadow-xl">
         <div class="max-w-6xl mx-auto flex justify-between items-center">
-            <span class="font-black italic tracking-tighter text-xl text-yellow-400">PAPA-LEAGUE</span>
-            <div id="status-badge" class="bg-green-500 text-[10px] px-2 py-1 rounded-full font-bold animate-pulse">EN VIVO</div>
+            <h1 class="font-black italic text-2xl tracking-tighter">PADRES F.C.</h1>
+            <div class="flex items-center gap-2 bg-indigo-800 px-3 py-1 rounded-full text-xs font-bold">
+                <i data-lucide="users" class="w-4 h-4"></i>
+                ROTACIONES 5 MIN
+            </div>
         </div>
     </nav>
 
-    <main class="max-w-4xl mx-auto p-4 md:p-8">
+    <main class="max-w-5xl mx-auto p-4 md:p-8 space-y-8">
         
-        <!-- Timer Card -->
-        <div class="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden mb-8">
-            <div class="bg-slate-100 p-4 border-b border-slate-200 text-center">
-                <p class="text-slate-500 text-xs font-bold uppercase">Tiempo de Juego</p>
-            </div>
-            <div class="p-8 text-center">
-                <div id="game-time" class="text-7xl md:text-8xl font-black text-slate-800 tabular-nums tracking-tight">00:00</div>
-                <div class="flex justify-center gap-3 mt-8">
-                    <button onclick="toggleTimer()" id="btn-timer" class="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-4 rounded-2xl font-bold transition-all flex items-center gap-2 shadow-lg shadow-indigo-200">
-                        <i data-lucide="play"></i> <span id="btn-text">Iniciar Partido</span>
+        <!-- Dashboard de Control -->
+        <div class="grid md:grid-cols-2 gap-6">
+            
+            <!-- Cronómetro Real -->
+            <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="text-xs font-black uppercase tracking-widest text-slate-400">Tiempo de Juego</span>
+                    <i data-lucide="timer" class="text-indigo-500 w-5 h-5"></i>
+                </div>
+                <div id="game-time" class="text-6xl font-black text-slate-800 tabular-nums mb-6">00:00</div>
+                <div class="flex gap-2">
+                    <button onclick="toggleTimer()" id="btn-timer" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2 transition-all">
+                        <i data-lucide="play" id="icon-play"></i> <span id="text-play">Iniciar</span>
                     </button>
-                    <button onclick="resetTimer()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-6 py-4 rounded-2xl font-bold transition-all">
+                    <button onclick="resetTimer()" class="bg-slate-100 hover:bg-slate-200 text-slate-600 px-6 rounded-2xl transition-all">
                         <i data-lucide="rotate-ccw"></i>
                     </button>
                 </div>
             </div>
+
+            <!-- Simulador Manual -->
+            <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="text-xs font-black uppercase tracking-widest text-slate-400">Simulador de Turnos</span>
+                    <i data-lucide="test-tube" class="text-purple-500 w-5 h-5"></i>
+                </div>
+                <div class="space-y-6">
+                    <div>
+                        <div class="flex justify-between mb-2">
+                            <span class="text-sm font-bold text-slate-700">Ver Turno:</span>
+                            <span id="label-sim-min" class="text-sm font-black text-purple-600 bg-purple-50 px-3 py-1 rounded-lg">Minuto 0</span>
+                        </div>
+                        <input type="range" id="sim-slider" min="0" max="60" step="5" value="0" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-purple-600">
+                    </div>
+                    <p class="text-[11px] text-slate-500 italic">
+                        Desliza para ver quién estará en la portería o el banquillo en el futuro. Al pulsar "Iniciar" el reloj real tomará el control.
+                    </p>
+                </div>
+            </div>
+
         </div>
 
-        <div class="grid md:grid-cols-2 gap-6">
+        <!-- Lista de Jugadores -->
+        <div class="grid md:grid-cols-2 gap-8">
+            
             <!-- Equipo Amarillo -->
             <div class="space-y-4">
-                <div class="flex items-center gap-2 px-2">
-                    <span class="text-2xl">💛</span>
-                    <h2 class="text-xl font-extrabold text-slate-800 uppercase italic">Equipo Amarillo</h2>
+                <div class="flex items-center justify-between bg-yellow-400 p-4 rounded-2xl shadow-lg shadow-yellow-100">
+                    <h2 class="font-black text-yellow-900 italic tracking-tight">EQUIPO AMARILLO</h2>
+                    <span class="bg-yellow-900 text-yellow-400 text-[10px] font-bold px-2 py-1 rounded uppercase">Titulares: 5</span>
                 </div>
                 <div id="team-yellow-list" class="space-y-3"></div>
             </div>
 
             <!-- Equipo Naranja -->
             <div class="space-y-4">
-                <div class="flex items-center gap-2 px-2">
-                    <span class="text-2xl">🧡</span>
-                    <h2 class="text-xl font-extrabold text-slate-800 uppercase italic">Equipo Naranja</h2>
+                <div class="flex items-center justify-between bg-orange-500 p-4 rounded-2xl shadow-lg shadow-orange-100">
+                    <h2 class="font-black text-white italic tracking-tight text-lg">EQUIPO NARANJA</h2>
+                    <span class="bg-white text-orange-600 text-[10px] font-bold px-2 py-1 rounded uppercase">Titulares: 5</span>
                 </div>
                 <div id="team-orange-list" class="space-y-3"></div>
             </div>
+
         </div>
 
     </main>
 
     <script>
-        const playersYellow = ["Padre 1", "Padre 2", "Padre 3", "Padre 4", "Padre 5", "Padre 6"];
-        const playersOrange = ["Padre 1", "Padre 2", "Padre 3", "Padre 4", "Padre 5", "Padre 6"];
+        // Configuración de jugadores (puedes cambiarlos aquí)
+        const playersYellow = ["Carlos", "David", "Andrés", "Juan", "Pedro", "Roberto"];
+        const playersOrange = ["Miguel", "Luis", "Jorge", "Mateo", "Santi", "Felipe"];
 
         let seconds = 0;
         let timerInterval = null;
+        let isSimulating = false;
 
-        function updateUI() {
-            const iteration = Math.floor(seconds / 300); // 300s = 5 minutos
+        const slider = document.getElementById('sim-slider');
+        const labelSim = document.getElementById('label-sim-min');
+
+        // Escuchar cambios en el slider del simulador
+        slider.addEventListener('input', (e) => {
+            isSimulating = true;
+            const min = parseInt(e.target.value);
+            labelSim.innerText = `Minuto ${min}`;
+            
+            // Pausar cronómetro real si estaba activo para que no "salte"
+            if (timerInterval) toggleTimer();
+            
+            updateDisplay(min * 60);
+        });
+
+        function updateDisplay(currentSeconds) {
+            const iteration = Math.floor(currentSeconds / 300); // 300s = 5 minutos
             
             renderTeam('team-yellow-list', playersYellow, iteration, 'yellow');
             renderTeam('team-orange-list', playersOrange, iteration, 'orange');
             
-            const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
-            const secs = (seconds % 60).toString().padStart(2, '0');
-            document.getElementById('game-time').innerText = `${mins}:${secs}`;
-            
+            // Actualizar reloj visual (solo si no estamos simulando o si es el timer real)
+            if (!isSimulating) {
+                const mins = Math.floor(currentSeconds / 60).toString().padStart(2, '0');
+                const secs = (currentSeconds % 60).toString().padStart(2, '0');
+                document.getElementById('game-time').innerText = `${mins}:${secs}`;
+                slider.value = Math.floor(currentSeconds / 60);
+                labelSim.innerText = `Minuto ${slider.value}`;
+            }
+
             lucide.createIcons();
         }
 
@@ -89,57 +156,67 @@
 
             let displayOrder = [...originalPlayers];
             
-            // Rotación lógica: El del banquillo entra al inicio, el resto corre
+            // Lógica de rotación: El 6 entra, el 5 sale, el portero cambia
+            // Desplazamos la lista circularmente según la iteración
             for(let i = 0; i < iter; i++) {
-                let benchPlayer = displayOrder.pop();
-                displayOrder.unshift(benchPlayer);
+                let lastPlayer = displayOrder.pop(); // El último (banquillo)
+                displayOrder.unshift(lastPlayer);   // Pasa a ser el primero
             }
 
             displayOrder.forEach((name, index) => {
-                let role = "Jugador";
+                let role = "Jugador de Campo";
                 let icon = "user";
-                let style = "bg-white border-slate-200";
+                let bgColor = "bg-white border-slate-200 shadow-sm";
+                let textColor = "text-slate-800";
 
-                // Siguiendo tu lógica: el 3ero de la lista es portero (index 2)
-                // El último es banquillo (index 5)
+                // Index 2 = Portero (Jugador 3 originalmente)
+                // Index 5 = Banquillo (Jugador 6 originalmente)
                 if (index === 2) {
                     role = "Portero";
-                    icon = "shield-check";
-                    style = color === 'yellow' ? "bg-yellow-100 border-yellow-400 ring-2 ring-yellow-400" : "bg-orange-100 border-orange-400 ring-2 ring-orange-400";
+                    icon = "shield";
+                    bgColor = color === 'yellow' ? "bg-yellow-100 border-yellow-400 ring-2 ring-yellow-300" : "bg-orange-100 border-orange-400 ring-2 ring-orange-300";
                 } else if (index === 5) {
                     role = "Banquillo";
-                    icon = "clock";
-                    style = "bg-slate-100 border-dashed border-slate-300 opacity-60";
+                    icon = "coffee";
+                    bgColor = "bg-slate-100 border-dashed border-slate-300";
+                    textColor = "text-slate-400";
                 }
 
-                const div = document.createElement('div');
-                div.className = `flex items-center justify-between p-4 rounded-2xl border ${style} transition-all duration-500`;
-                div.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <i data-lucide="${icon}" class="w-5 h-5"></i>
-                        <span class="font-bold text-slate-800">${name}</span>
+                const card = document.createElement('div');
+                card.className = `flex items-center justify-between p-4 rounded-2xl border ${bgColor} ${textColor} transition-all duration-300`;
+                card.innerHTML = `
+                    <div class="flex items-center gap-4">
+                        <i data-lucide="${icon}" class="w-5 h-5 opacity-70"></i>
+                        <span class="font-bold text-lg tracking-tight">${name}</span>
                     </div>
-                    <span class="text-[10px] font-black uppercase tracking-widest opacity-50">${role}</span>
+                    <div class="text-right">
+                        <p class="text-[9px] font-black uppercase tracking-widest opacity-60">${role}</p>
+                    </div>
                 `;
-                container.appendChild(div);
+                container.appendChild(card);
             });
         }
 
         function toggleTimer() {
             const btn = document.getElementById('btn-timer');
-            const txt = document.getElementById('btn-text');
+            const icon = document.getElementById('icon-play');
+            const text = document.getElementById('text-play');
+
             if (timerInterval) {
                 clearInterval(timerInterval);
                 timerInterval = null;
-                txt.innerText = "Reanudar";
-                btn.classList.replace('bg-red-500', 'bg-indigo-600');
+                text.innerText = "Reanudar";
+                icon.setAttribute('data-lucide', 'play');
+                btn.className = btn.className.replace('bg-red-500', 'bg-indigo-600');
             } else {
+                isSimulating = false; // El reloj real manda
                 timerInterval = setInterval(() => {
                     seconds++;
-                    updateUI();
+                    updateDisplay(seconds);
                 }, 1000);
-                txt.innerText = "Pausar";
-                btn.classList.replace('bg-indigo-600', 'bg-red-500');
+                text.innerText = "Pausar";
+                icon.setAttribute('data-lucide', 'pause');
+                btn.className = btn.className.replace('bg-indigo-600', 'bg-red-500');
             }
             lucide.createIcons();
         }
@@ -148,12 +225,17 @@
             clearInterval(timerInterval);
             timerInterval = null;
             seconds = 0;
-            document.getElementById('btn-text').innerText = "Iniciar Partido";
-            document.getElementById('btn-timer').classList.replace('bg-red-500', 'bg-indigo-600');
-            updateUI();
+            isSimulating = false;
+            document.getElementById('text-play').innerText = "Iniciar";
+            document.getElementById('icon-play').setAttribute('data-lucide', 'play');
+            document.getElementById('btn-timer').className = "flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2 transition-all";
+            slider.value = 0;
+            labelSim.innerText = "Minuto 0";
+            updateDisplay(0);
         }
 
-        updateUI();
+        // Carga inicial
+        updateDisplay(0);
     </script>
 </body>
 </html>
