@@ -3,32 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Padres Rambleta Championship</title>
+    <title>Padres Rambleta Championship LIVE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background-color: #f8fafc;
-        }
-        .player-card {
-            transition: all 0.3s ease;
-        }
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            height: 20px;
-            width: 20px;
-            border-radius: 50%;
-            background: #7c3aed;
-            cursor: pointer;
-            box-shadow: 0 0 5px rgba(0,0,0,0.2);
-        }
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .player-card { transition: all 0.2s ease; }
     </style>
 </head>
 <body class="min-h-screen text-slate-900 pb-16">
 
-    <!-- Header Informativo -->
     <header class="bg-slate-900 text-white shadow-lg">
         <div class="max-w-4xl mx-auto p-6 text-center">
             <h1 class="text-xl md:text-3xl font-black italic tracking-tighter text-yellow-400 uppercase">
@@ -36,43 +21,33 @@
             </h1>
             <div class="flex justify-center gap-4 mt-2 text-slate-400 text-[10px] font-bold uppercase tracking-widest">
                 <span class="flex items-center gap-1"><i data-lucide="map-pin" class="w-3 h-3"></i> Rambleta Stadium</span>
-                <span class="flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3"></i> Hoy, 20:30h</span>
+                <span id="connection-status" class="flex items-center gap-1 text-red-400">
+                    <i data-lucide="wifi-off" class="w-3 h-3"></i> Sin Conexión
+                </span>
             </div>
         </div>
     </header>
 
     <main class="max-w-4xl mx-auto p-4 space-y-6">
         
-        <!-- Marcador de Goles -->
+        <!-- Marcador Compartido -->
         <section class="bg-white rounded-3xl p-6 shadow-md border border-slate-200">
             <div class="flex items-center justify-between gap-4">
-                <!-- Goles Amarillo -->
                 <div class="flex-1 flex flex-col items-center gap-2">
-                    <span class="text-[10px] font-black uppercase text-yellow-600">Amarillo</span>
+                    <span class="text-[10px] font-black uppercase text-yellow-600 tracking-widest">Amarillo</span>
                     <div class="flex items-center gap-3">
-                        <button onclick="changeScore('yellow', -1)" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200 transition-colors">
-                            <i data-lucide="minus" class="w-4 h-4"></i>
-                        </button>
+                        <button onclick="updateScore('yellow', -1)" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500">-</button>
                         <span id="score-yellow" class="text-5xl font-black tabular-nums">0</span>
-                        <button onclick="changeScore('yellow', 1)" class="w-8 h-8 rounded-full bg-yellow-400 flex items-center justify-center text-yellow-900 hover:bg-yellow-500 transition-colors shadow-sm">
-                            <i data-lucide="plus" class="w-4 h-4"></i>
-                        </button>
+                        <button onclick="updateScore('yellow', 1)" class="w-8 h-8 rounded-full bg-yellow-400 flex items-center justify-center text-yellow-900 shadow-sm">+</button>
                     </div>
                 </div>
-
-                <div class="text-slate-300 font-black text-2xl mt-4">VS</div>
-
-                <!-- Goles Naranja -->
+                <div class="text-slate-300 font-black text-2xl mt-4 italic">VS</div>
                 <div class="flex-1 flex flex-col items-center gap-2">
-                    <span class="text-[10px] font-black uppercase text-orange-600">Naranja</span>
+                    <span class="text-[10px] font-black uppercase text-orange-600 tracking-widest">Naranja</span>
                     <div class="flex items-center gap-3">
-                        <button onclick="changeScore('orange', -1)" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200 transition-colors">
-                            <i data-lucide="minus" class="w-4 h-4"></i>
-                        </button>
+                        <button onclick="updateScore('orange', -1)" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200">-</button>
                         <span id="score-orange" class="text-5xl font-black tabular-nums">0</span>
-                        <button onclick="changeScore('orange', 1)" class="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center text-white hover:bg-orange-600 transition-colors shadow-sm">
-                            <i data-lucide="plus" class="w-4 h-4"></i>
-                        </button>
+                        <button onclick="updateScore('orange', 1)" class="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center text-white shadow-sm">+</button>
                     </div>
                 </div>
             </div>
@@ -80,202 +55,246 @@
 
         <!-- Cronómetro y Simulador -->
         <div class="grid md:grid-cols-2 gap-4">
-            <!-- Reloj -->
             <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="text-[10px] font-black uppercase text-slate-400 tracking-tight">Tiempo de Juego</span>
-                    <i data-lucide="timer" class="text-indigo-500 w-4 h-4"></i>
+                    <span class="text-[10px] font-black uppercase text-slate-400">Estado del Partido</span>
                 </div>
                 <div id="game-time" class="text-6xl font-black text-slate-800 tabular-nums text-center mb-4 tracking-tighter">00:00</div>
                 <div class="flex gap-2">
-                    <button onclick="toggleTimer()" id="btn-timer" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-3.5 rounded-2xl font-bold flex items-center justify-center gap-2 transition-all shadow-lg shadow-indigo-100">
+                    <button onclick="toggleTimerRemote()" id="btn-timer" class="flex-1 bg-indigo-600 text-white py-3.5 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-lg">
                         <i data-lucide="play" id="icon-play" class="w-4 h-4"></i> <span id="text-play">Empezar</span>
                     </button>
-                    <button onclick="resetTimer()" class="bg-slate-100 hover:bg-slate-200 text-slate-600 px-5 rounded-2xl transition-all border border-slate-200">
+                    <button onclick="resetRemote()" class="bg-slate-100 text-slate-600 px-5 rounded-2xl border border-slate-200">
                         <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
                     </button>
                 </div>
             </div>
 
-            <!-- Simulador -->
             <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200">
                 <div class="flex items-center justify-between mb-4">
-                    <span class="text-[10px] font-black uppercase text-slate-400">Rotación Futura</span>
+                    <span class="text-[10px] font-black uppercase text-slate-400">Previsión de Turnos (Local)</span>
                     <span id="label-sim-min" class="text-sm font-black text-purple-600 bg-purple-50 px-2.5 py-1 rounded-lg">Minuto 0</span>
                 </div>
                 <input type="range" id="sim-slider" min="0" max="60" step="5" value="0" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-purple-600 mb-2">
-                <p class="text-[9px] text-slate-400 italic text-center leading-tight">Mueve la barra para prever quién va a portería o banquillo.</p>
+                <p class="text-[9px] text-slate-400 italic text-center">Desliza para ver rotaciones futuras cada 5 min.</p>
             </div>
         </div>
 
-        <!-- Lista de Equipos -->
+        <!-- Listado de Jugadores -->
         <div class="grid md:grid-cols-2 gap-6">
-            <!-- Equipo Amarillo -->
             <div class="space-y-3">
-                <div class="bg-yellow-400 p-4 rounded-2xl shadow-md border-b-4 border-yellow-600 flex justify-between items-center">
-                    <h2 class="font-black text-yellow-900 italic text-sm uppercase">Equipo Amarillo 💛</h2>
+                <div class="bg-yellow-400 p-4 rounded-2xl shadow-md border-b-4 border-yellow-600 flex justify-between">
+                    <h2 class="font-black text-yellow-900 italic text-sm">AMARILLO 💛</h2>
                 </div>
                 <div id="team-yellow-list" class="space-y-2"></div>
             </div>
-
-            <!-- Equipo Naranja -->
             <div class="space-y-3">
-                <div class="bg-orange-500 p-4 rounded-2xl shadow-md border-b-4 border-orange-700 flex justify-between items-center text-white">
-                    <h2 class="font-black italic text-sm uppercase">Equipo Naranja 🧡</h2>
+                <div class="bg-orange-500 p-4 rounded-2xl shadow-md border-b-4 border-orange-700 text-white flex justify-between">
+                    <h2 class="font-black italic text-sm uppercase">Naranja 🧡</h2>
                 </div>
                 <div id="team-orange-list" class="space-y-2"></div>
             </div>
         </div>
     </main>
 
-    <script>
-        // ORDEN DE JUGADORES (Mantenido estrictamente)
-        const playersYellow = ["Albert M", "Iban", "Michele", "Victor", "Joan", "Robert"];
-        const playersOrange = ["Mikel", "Guillermo", "Gabriel", "Jordi", "Mike", "Giacomo"];
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, doc, setDoc, onSnapshot, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
-        let seconds = 0;
-        let scoreYellow = 0;
-        let scoreOrange = 0;
+        const firebaseConfig = JSON.parse(__firebase_config);
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'rambleta-live-final-v2';
+
+        // JUGADORES ACTUALIZADOS
+        const playersYellow = ["Víctor", "Guillermo", "Mikel", "Hadi", "Michele", "David"];
+        const playersOrange = ["Aureli", "Ayoub II", "Gabriel", "Vila", "Robert", "Mike"];
+
+        let gameState = {
+            scoreYellow: 0,
+            scoreOrange: 0,
+            seconds: 0,
+            isRunning: false,
+            lastUpdated: Date.now()
+        };
+
+        let localSeconds = 0;
         let timerInterval = null;
-        let isSimulating = false;
 
-        const slider = document.getElementById('sim-slider');
-        const labelSim = document.getElementById('label-sim-min');
+        // Renderizado inicial forzado para que se vean los nombres aunque no haya internet
+        const forceInitialRender = () => {
+            updateVisuals(0);
+        };
 
-        // Manejo de Goles
-        function changeScore(team, val) {
-            if (team === 'yellow') {
-                scoreYellow = Math.max(0, scoreYellow + val);
-                document.getElementById('score-yellow').innerText = scoreYellow;
+        // --- AUTH ---
+        const initAuth = async () => {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (e) { console.error(e); }
+        };
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                const status = document.getElementById('connection-status');
+                status.innerHTML = '<i data-lucide="wifi" class="w-3 h-3 text-green-400"></i> En línea';
+                status.classList.replace('text-red-400', 'text-green-400');
+                lucide.createIcons();
+                subscribeToGame();
+            }
+        });
+
+        // --- SYNC ---
+        async function subscribeToGame() {
+            const gameDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'match_state');
+            
+            // Primer intento de carga
+            const docSnap = await getDoc(gameDocRef);
+            if (!docSnap.exists()) {
+                await setDoc(gameDocRef, gameState);
+            }
+
+            onSnapshot(gameDocRef, (snapshot) => {
+                if (snapshot.exists()) {
+                    gameState = snapshot.data();
+                    syncLocalUI();
+                }
+            });
+        }
+
+        function syncLocalUI() {
+            document.getElementById('score-yellow').innerText = gameState.scoreYellow || 0;
+            document.getElementById('score-orange').innerText = gameState.scoreOrange || 0;
+            
+            if (gameState.isRunning) {
+                const now = Date.now();
+                const diff = Math.floor((now - (gameState.lastUpdated || now)) / 1000);
+                localSeconds = (gameState.seconds || 0) + diff;
+                startLocalVisualTimer();
             } else {
-                scoreOrange = Math.max(0, scoreOrange + val);
-                document.getElementById('score-orange').innerText = scoreOrange;
+                localSeconds = gameState.seconds || 0;
+                stopLocalVisualTimer();
+                updateVisuals(localSeconds);
             }
         }
 
-        slider.addEventListener('input', (e) => {
-            isSimulating = true;
-            const min = parseInt(e.target.value);
-            labelSim.innerText = `Minuto ${min}`;
-            if (timerInterval) pauseTimer(); 
-            updateDisplay(min * 60);
-        });
+        // --- ACTIONS ---
+        window.updateScore = async (team, val) => {
+            if (!auth.currentUser) return;
+            const gameDoc = doc(db, 'artifacts', appId, 'public', 'data', 'match_state');
+            const field = team === 'yellow' ? 'scoreYellow' : 'scoreOrange';
+            const newVal = Math.max(0, (gameState[field] || 0) + val);
+            await updateDoc(gameDoc, { [field]: newVal });
+        };
 
-        function updateDisplay(currentSeconds) {
-            const iteration = Math.floor(currentSeconds / 300); // 5 min = 300 seg
+        window.toggleTimerRemote = async () => {
+            if (!auth.currentUser) return;
+            const gameDoc = doc(db, 'artifacts', appId, 'public', 'data', 'match_state');
+            await updateDoc(gameDoc, {
+                isRunning: !gameState.isRunning,
+                seconds: localSeconds,
+                lastUpdated: Date.now()
+            });
+        };
+
+        window.resetRemote = async () => {
+            if (!confirm("¿Reiniciar partido para todos?")) return;
+            const gameDoc = doc(db, 'artifacts', appId, 'public', 'data', 'match_state');
+            await setDoc(gameDoc, {
+                scoreYellow: 0,
+                scoreOrange: 0,
+                seconds: 0,
+                isRunning: false,
+                lastUpdated: Date.now()
+            });
+        };
+
+        // --- VISUALS ---
+        function startLocalVisualTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            document.getElementById('text-play').innerText = "Pausar";
+            document.getElementById('icon-play').setAttribute('data-lucide', 'pause');
+            document.getElementById('btn-timer').classList.replace('bg-indigo-600', 'bg-red-500');
+            timerInterval = setInterval(() => {
+                localSeconds++;
+                updateVisuals(localSeconds);
+            }, 1000);
+            lucide.createIcons();
+        }
+
+        function stopLocalVisualTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = null;
+            document.getElementById('text-play').innerText = "Empezar";
+            document.getElementById('icon-play').setAttribute('data-lucide', 'play');
+            document.getElementById('btn-timer').classList.replace('bg-red-500', 'bg-indigo-600');
+            lucide.createIcons();
+        }
+
+        function updateVisuals(secs) {
+            const minsDisplay = Math.floor(secs / 60).toString().padStart(2, '0');
+            const secsDisplay = (secs % 60).toString().padStart(2, '0');
+            document.getElementById('game-time').innerText = `${minsDisplay}:${secsDisplay}`;
             
+            const iteration = Math.floor(secs / 300);
             renderTeam('team-yellow-list', playersYellow, iteration, 'yellow');
             renderTeam('team-orange-list', playersOrange, iteration, 'orange');
-            
-            if (!isSimulating) {
-                const mins = Math.floor(currentSeconds / 60).toString().padStart(2, '0');
-                const secs = (currentSeconds % 60).toString().padStart(2, '0');
-                document.getElementById('game-time').innerText = `${mins}:${secs}`;
-                slider.value = Math.floor(currentSeconds / 60);
-                labelSim.innerText = `Minuto ${slider.value}`;
-            }
-            lucide.createIcons();
         }
 
         function renderTeam(containerId, originalPlayers, iter, color) {
             const container = document.getElementById(containerId);
+            if (!container) return;
             container.innerHTML = '';
-
-            let displayOrder = [...originalPlayers];
             
-            // Rotación circular: el último entra al inicio
+            let displayOrder = [...originalPlayers];
             for(let i = 0; i < iter; i++) {
-                let benchPlayer = displayOrder.pop(); 
-                displayOrder.unshift(benchPlayer);   
+                let p = displayOrder.pop(); 
+                displayOrder.unshift(p);   
             }
 
             displayOrder.forEach((name, index) => {
-                let role = "En Campo";
+                let role = "Campo";
                 let icon = "user";
                 let bgColor = "bg-white border-slate-200 shadow-sm";
-                let tagColor = "bg-slate-100 text-slate-500";
-
-                // Index 2 (Jugador 3 originalmente) es el Portero
+                
                 if (index === 2) {
                     role = "Portero";
                     icon = "shield";
-                    bgColor = color === 'yellow' ? "bg-yellow-50 border-yellow-300 ring-1 ring-yellow-400/30" : "bg-orange-50 border-orange-300 ring-1 ring-orange-500/30";
-                    tagColor = color === 'yellow' ? "bg-yellow-500 text-white" : "bg-orange-600 text-white";
-                } 
-                // Index 5 (Jugador 6 originalmente) es el Banquillo
-                else if (index === 5) {
-                    role = "Banquillo";
+                    bgColor = color === 'yellow' ? "bg-yellow-50 border-yellow-300 ring-1 ring-yellow-400" : "bg-orange-50 border-orange-300 ring-1 ring-orange-500";
+                } else if (index === 5) {
+                    role = "Descanso";
                     icon = "coffee";
-                    bgColor = "bg-slate-50/80 border-dashed border-slate-300 opacity-60";
-                    tagColor = "bg-slate-400 text-white";
+                    bgColor = "bg-slate-50 opacity-60 border-dashed border-slate-300";
                 }
 
                 const card = document.createElement('div');
-                card.className = `player-card flex items-center justify-between p-3.5 rounded-2xl border ${bgColor}`;
+                card.className = `player-card flex items-center justify-between p-3 rounded-xl border ${bgColor}`;
                 card.innerHTML = `
                     <div class="flex items-center gap-3">
-                        <div class="p-1.5 rounded-lg ${index === 2 ? 'bg-white shadow-sm' : ''}">
-                            <i data-lucide="${icon}" class="w-4 h-4"></i>
-                        </div>
-                        <span class="font-bold text-slate-800 text-sm tracking-tight">${name}</span>
+                        <i data-lucide="${icon}" class="w-4 h-4"></i>
+                        <span class="font-bold text-sm tracking-tight">${name}</span>
                     </div>
-                    <span class="text-[8px] font-black uppercase px-2 py-0.5 rounded-md ${tagColor}">${role}</span>
+                    <span class="text-[8px] font-black uppercase px-2 py-0.5 rounded-md ${index === 2 ? (color === 'yellow' ? 'bg-yellow-500 text-white' : 'bg-orange-600 text-white') : 'bg-slate-100 text-slate-500'}">${role}</span>
                 `;
                 container.appendChild(card);
             });
-        }
-
-        function toggleTimer() {
-            const btn = document.getElementById('btn-timer');
-            const icon = document.getElementById('icon-play');
-            const text = document.getElementById('text-play');
-
-            if (timerInterval) {
-                pauseTimer();
-            } else {
-                isSimulating = false;
-                timerInterval = setInterval(() => {
-                    seconds++;
-                    updateDisplay(seconds);
-                }, 1000);
-                text.innerText = "Pausar";
-                icon.setAttribute('data-lucide', 'pause');
-                btn.classList.replace('bg-indigo-600', 'bg-red-500');
-            }
             lucide.createIcons();
         }
 
-        function pauseTimer() {
-            const btn = document.getElementById('btn-timer');
-            const icon = document.getElementById('icon-play');
-            const text = document.getElementById('text-play');
-            clearInterval(timerInterval);
-            timerInterval = null;
-            text.innerText = "Reanudar";
-            icon.setAttribute('data-lucide', 'play');
-            btn.classList.replace('bg-red-500', 'bg-indigo-600');
-        }
+        document.getElementById('sim-slider').addEventListener('input', (e) => {
+            const min = parseInt(e.target.value);
+            document.getElementById('label-sim-min').innerText = `Minuto ${min}`;
+            updateVisuals(min * 60);
+        });
 
-        function resetTimer() {
-            if(!confirm("¿Deseas reiniciar el tiempo y los goles?")) return;
-            clearInterval(timerInterval);
-            timerInterval = null;
-            seconds = 0;
-            scoreYellow = 0;
-            scoreOrange = 0;
-            isSimulating = false;
-            document.getElementById('score-yellow').innerText = "0";
-            document.getElementById('score-orange').innerText = "0";
-            document.getElementById('text-play').innerText = "Empezar";
-            document.getElementById('icon-play').setAttribute('data-lucide', 'play');
-            document.getElementById('btn-timer').className = "flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-3.5 rounded-2xl font-bold flex items-center justify-center gap-2 transition-all shadow-lg";
-            slider.value = 0;
-            labelSim.innerText = "Minuto 0";
-            updateDisplay(0);
-        }
-
-        // Carga inicial
-        updateDisplay(0);
+        // Iniciar
+        forceInitialRender();
+        initAuth();
     </script>
 </body>
 </html>
