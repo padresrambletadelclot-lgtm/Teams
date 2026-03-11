@@ -8,116 +8,100 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; -webkit-tap-highlight-color: transparent; }
-        .player-card { transition: all 0.2s ease; }
-        .admin-controls { display: none; }
-        body.is-admin .admin-controls { display: flex; }
-        body.is-admin .viewer-msg { display: none; }
-        .tab-active { border-bottom: 3px solid #fbbf24; color: #fbbf24; }
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; -webkit-tap-highlight-color: transparent; }
+        .admin-btn { display: none; }
+        body.is-admin .admin-btn { display: flex; }
+        body.is-admin .viewer-label { display: none; }
+        input[type=range] { -webkit-appearance: none; background: #e2e8f0; border-radius: 10px; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 20px; width: 20px; border-radius: 50%; background: #4f46e5; cursor: pointer; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
     </style>
 </head>
-<body class="min-h-screen pb-24">
+<body class="min-h-screen pb-32">
 
-    <!-- Header con Estado -->
-    <header class="bg-slate-900 text-white p-5 shadow-2xl">
+    <!-- Navbar -->
+    <nav class="bg-slate-900 text-white p-4 sticky top-0 z-40 shadow-lg">
         <div class="max-w-md mx-auto flex justify-between items-center">
             <div>
-                <h1 class="text-2xl font-black italic text-yellow-400 leading-none">RAMBLETA</h1>
-                <p class="text-[9px] font-bold tracking-[0.2em] text-slate-400 uppercase">Championship 2024</p>
+                <h1 class="text-xl font-black italic text-yellow-400">RAMBLETA LIVE</h1>
+                <div id="status" class="flex items-center gap-1.5 opacity-60">
+                    <div class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></div>
+                    <span class="text-[8px] font-bold uppercase tracking-widest">Sincronizando...</span>
+                </div>
             </div>
-            <div id="status-dot" class="flex items-center gap-2 px-3 py-1 bg-slate-800 rounded-full border border-slate-700">
-                <div class="w-2 h-2 rounded-full bg-red-500"></div>
-                <span class="text-[9px] font-bold uppercase text-slate-300">Offline</span>
-            </div>
+            <div id="admin-indicator" class="hidden bg-green-500/20 text-green-400 text-[8px] font-black px-2 py-1 rounded border border-green-500/30 uppercase">MODO ADMIN</div>
         </div>
-    </header>
+    </nav>
 
     <main class="max-w-md mx-auto p-4 space-y-4">
         
-        <!-- Marcador Principal -->
-        <div class="bg-white rounded-[2.5rem] p-8 shadow-xl border border-slate-100 relative overflow-hidden">
-            <div class="flex justify-between items-center relative z-10">
+        <!-- Marcador -->
+        <div class="bg-white rounded-[2rem] p-6 shadow-sm border border-slate-200">
+            <div class="flex justify-between items-center">
                 <div class="text-center flex-1">
-                    <span class="text-[10px] font-black uppercase text-yellow-600 tracking-tighter">Amarillo</span>
-                    <div class="text-6xl font-black tabular-nums my-2" id="score-y">0</div>
-                    <div class="admin-controls justify-center gap-2">
-                        <button onclick="modScore('y',-1)" class="w-10 h-10 rounded-full bg-slate-100 text-slate-400 font-bold">-</button>
-                        <button onclick="modScore('y',1)" class="w-10 h-10 rounded-full bg-yellow-400 text-yellow-900 font-bold shadow-lg">+</button>
+                    <p class="text-[9px] font-black text-yellow-600 uppercase tracking-widest mb-1 text-center w-full">Amarillo</p>
+                    <div class="text-6xl font-black tabular-nums" id="score-y">0</div>
+                    <div class="admin-btn justify-center gap-2 mt-2">
+                        <button onclick="changeScore('y', -1)" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 font-bold">-</button>
+                        <button onclick="changeScore('y', 1)" class="w-8 h-8 rounded-full bg-yellow-400 flex items-center justify-center text-yellow-900 font-bold shadow-sm">+</button>
                     </div>
                 </div>
-                <div class="font-black text-slate-200 italic text-2xl px-4">VS</div>
+                <div class="font-black text-slate-200 italic mx-4 text-xl">VS</div>
                 <div class="text-center flex-1">
-                    <span class="text-[10px] font-black uppercase text-orange-600 tracking-tighter">Naranja</span>
-                    <div class="text-6xl font-black tabular-nums my-2" id="score-o">0</div>
-                    <div class="admin-controls justify-center gap-2">
-                        <button onclick="modScore('o',-1)" class="w-10 h-10 rounded-full bg-slate-100 text-slate-400 font-bold">-</button>
-                        <button onclick="modScore('o',1)" class="w-10 h-10 rounded-full bg-orange-500 text-white font-bold shadow-lg">+</button>
+                    <p class="text-[9px] font-black text-orange-600 uppercase tracking-widest mb-1 text-center w-full">Naranja</p>
+                    <div class="text-6xl font-black tabular-nums" id="score-o">0</div>
+                    <div class="admin-btn justify-center gap-2 mt-2">
+                        <button onclick="changeScore('o', -1)" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 font-bold">-</button>
+                        <button onclick="changeScore('o', 1)" class="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center text-white font-bold shadow-sm">+</button>
                     </div>
                 </div>
             </div>
-            <p class="viewer-msg text-center text-[9px] font-bold text-slate-300 mt-4 tracking-widest italic uppercase">Vista de Espectador</p>
         </div>
 
-        <!-- Tiempo y Control -->
-        <div class="bg-white rounded-3xl p-6 shadow-lg border border-slate-100 flex flex-col items-center">
-            <div id="display-time" class="text-7xl font-black text-slate-800 tabular-nums tracking-tighter mb-6">00:00</div>
+        <!-- Cronómetro -->
+        <div class="bg-white rounded-[2rem] p-6 shadow-sm border border-slate-200 flex flex-col items-center">
+            <div id="timer" class="text-7xl font-black text-slate-800 tabular-nums tracking-tighter mb-4">00:00</div>
             
-            <div class="admin-controls w-full gap-3">
-                <button id="btn-run" onclick="toggleClock()" class="flex-[2] h-16 bg-indigo-600 text-white rounded-2xl font-black uppercase tracking-widest shadow-xl flex items-center justify-center gap-2">
-                    <i data-lucide="play" class="w-6 h-6 fill-current"></i> <span>Play</span>
+            <div class="admin-btn w-full gap-2">
+                <button id="btn-play" onclick="toggleTimer()" class="flex-1 h-14 bg-indigo-600 text-white rounded-2xl font-black uppercase text-xs tracking-widest shadow-lg flex items-center justify-center gap-2">
+                    <i data-lucide="play" class="w-4 h-4 fill-current"></i> Iniciar
                 </button>
-                <button onclick="resetMatch()" class="flex-1 h-16 bg-slate-100 text-slate-400 rounded-2xl flex items-center justify-center">
-                    <i data-lucide="refresh-cw" class="w-6 h-6"></i>
+                <button onclick="resetAll()" class="w-14 h-14 bg-slate-100 text-slate-400 rounded-2xl flex items-center justify-center border border-slate-200">
+                    <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
                 </button>
             </div>
-
-            <!-- Slider Local -->
-            <div class="w-full mt-2">
-                <div class="flex justify-between text-[10px] font-black text-slate-400 uppercase mb-2">
-                    <span>Previsión de porteros</span>
-                    <span id="label-min" class="text-indigo-600">Minuto 0</span>
-                </div>
-                <input type="range" id="slider" min="0" max="60" step="5" value="0" class="w-full h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-indigo-600">
-            </div>
+            
+            <div class="viewer-label text-[9px] font-black text-slate-300 uppercase tracking-[0.2em] italic">Vista Espectador</div>
         </div>
 
-        <!-- Listas de Jugadores -->
+        <!-- Simulador -->
+        <div class="px-2">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-[10px] font-black text-slate-400 uppercase tracking-wider">Previsión de turnos</span>
+                <span id="label-min" class="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">Minuto 0</span>
+            </div>
+            <input type="range" id="slider" min="0" max="60" step="5" value="0" class="w-full h-2">
+        </div>
+
+        <!-- Jugadores -->
         <div class="grid grid-cols-2 gap-4">
-            <div class="space-y-3">
-                <h3 class="text-[10px] font-black uppercase text-yellow-600 pl-2">Equipo Amarillo</h3>
+            <div class="space-y-2">
+                <h3 class="text-[10px] font-black uppercase text-yellow-600 pl-1">Amarillo 💛</h3>
                 <div id="list-y" class="space-y-2"></div>
             </div>
-            <div class="space-y-3">
-                <h3 class="text-[10px] font-black uppercase text-orange-600 pl-2">Equipo Naranja</h3>
+            <div class="space-y-2">
+                <h3 class="text-[10px] font-black uppercase text-orange-600 pl-1">Naranja 🧡</h3>
                 <div id="list-o" class="space-y-2"></div>
             </div>
         </div>
-
-        <!-- Footer Admin Login -->
-        <div class="pt-8 pb-4 text-center">
-            <button id="login-trigger" onclick="showLogin()" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2 mx-auto opacity-50 hover:opacity-100">
-                <i data-lucide="lock" class="w-3 h-3"></i> Acceso Organización
-            </button>
-        </div>
     </main>
 
-    <!-- Modal Login -->
-    <div id="login-modal" class="fixed inset-0 bg-slate-900/90 backdrop-blur-sm z-50 hidden items-center justify-center p-6">
-        <div class="bg-white rounded-3xl p-8 w-full max-w-xs text-center">
-            <h4 class="font-black uppercase text-sm mb-6">PIN de Control</h4>
-            <div class="grid grid-cols-3 gap-3 mb-6">
-                {[1,2,3,4,5,6,7,8,9].map(n => `<button onclick="tapPin('${n}')" class="h-14 bg-slate-50 rounded-xl font-bold text-xl">${n}</button>`).join('')}
-                <button onclick="hideLogin()" class="bg-red-50 text-red-400 rounded-xl font-bold flex items-center justify-center"><i data-lucide="x" class="w-6 h-6"></i></button>
-                <button onclick="tapPin('0')" class="h-14 bg-slate-50 rounded-xl font-bold text-xl">0</button>
-                <button onclick="clearPin()" class="bg-slate-100 rounded-xl font-bold flex items-center justify-center"><i data-lucide="delete" class="w-6 h-6"></i></button>
-            </div>
-            <div id="pin-display" class="flex justify-center gap-4 h-4 mb-4">
-                <div class="w-3 h-3 rounded-full bg-slate-200"></div>
-                <div class="w-3 h-3 rounded-full bg-slate-200"></div>
-                <div class="w-3 h-3 rounded-full bg-slate-200"></div>
-                <div class="w-3 h-3 rounded-full bg-slate-200"></div>
-            </div>
+    <!-- Admin Logic Bar -->
+    <div class="fixed bottom-0 inset-x-0 p-4 bg-white/80 backdrop-blur-md border-t border-slate-200 z-50">
+        <div class="max-w-md mx-auto flex gap-2 items-center" id="login-container">
+            <input type="password" id="pin-input" placeholder="PIN Admin" class="flex-1 h-12 bg-slate-100 border-none rounded-xl px-4 text-center font-bold tracking-widest focus:ring-2 focus:ring-indigo-500 outline-none">
+            <button onclick="tryLogin()" class="h-12 px-6 bg-slate-900 text-white rounded-xl font-black text-xs uppercase tracking-widest">Entrar</button>
         </div>
+        <p class="text-[8px] text-center text-slate-400 mt-2 font-bold uppercase tracking-widest">Rambleta Championship &copy; 2024</p>
     </div>
 
     <script type="module">
@@ -125,49 +109,49 @@
         import { getFirestore, doc, onSnapshot, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
-        // CONFIGURACIÓN DATOS
-        const playersYellow = ["Víctor", "Guillermo", "Mikel", "Hadi", "Michele", "David"];
-        const playersOrange = ["Aureli", "Ayoub II", "Gabriel", "Vila", "Robert", "Mike"];
+        // CONFIG
+        const playersY = ["Víctor", "Guillermo", "Mikel", "Hadi", "Michele", "David"];
+        const playersO = ["Aureli", "Ayoub II", "Gabriel", "Vila", "Robert", "Mike"];
         const ADMIN_PIN = "1234";
+        const appId = "rambleta-v6-stable";
 
-        const appId = "rambleta-final-v5";
         let state = { scoreY: 0, scoreO: 0, secs: 0, running: false, lastUpd: Date.now() };
         let localSecs = 0;
-        let clockInterval = null;
+        let timerInt = null;
         let db;
 
-        // --- RENDERIZADO INICIAL ---
-        const render = (s) => {
+        // --- RENDER ---
+        const updateLists = (s) => {
             const m = Math.floor(s / 60).toString().padStart(2, '0');
             const sc = (s % 60).toString().padStart(2, '0');
-            document.getElementById('display-time').innerText = `${m}:${sc}`;
+            document.getElementById('timer').innerText = `${m}:${sc}`;
             
             const iter = Math.floor(s / 300);
-            drawList('list-y', playersYellow, iter, 'yellow');
-            drawList('list-o', playersOrange, iter, 'orange');
+            draw('list-y', playersY, iter, 'yellow');
+            draw('list-o', playersO, iter, 'orange');
             lucide.createIcons();
         };
 
-        const drawList = (id, list, iter, color) => {
+        const draw = (id, list, iter, color) => {
             const el = document.getElementById(id);
             let ord = [...list];
             for(let i=0; i<iter; i++) ord.unshift(ord.pop());
             
             el.innerHTML = ord.map((name, i) => {
                 let role = i===2 ? '🧤' : (i===5 ? '💤' : '🏃');
-                let bg = i===5 ? 'bg-slate-50 opacity-40' : 'bg-white shadow-sm';
-                if(i===2) bg = color === 'yellow' ? 'bg-yellow-50 border border-yellow-200 ring-2 ring-yellow-400/20' : 'bg-orange-50 border border-orange-200 ring-2 ring-orange-500/20';
+                let bg = i===5 ? 'bg-slate-100/50 opacity-40 border-dashed' : 'bg-white shadow-sm';
+                if(i===2) bg = color === 'yellow' ? 'bg-yellow-50 border-yellow-200' : 'bg-orange-50 border-orange-200';
                 
                 return `
-                    <div class="p-3 rounded-2xl border ${bg} flex items-center justify-between">
-                        <span class="font-bold text-xs truncate mr-1">${name}</span>
-                        <span class="text-xs">${role}</span>
+                    <div class="p-3 rounded-xl border ${bg} flex items-center justify-between text-[11px]">
+                        <span class="font-bold truncate">${name}</span>
+                        <span>${role}</span>
                     </div>
                 `;
             }).join('');
         };
 
-        // --- FIREBASE SYNC ---
+        // --- SYNC ---
         try {
             const config = JSON.parse(__firebase_config);
             const app = initializeApp(config);
@@ -175,10 +159,8 @@
             const auth = getAuth(app);
 
             signInAnonymously(auth).then(() => {
-                const status = document.getElementById('status-dot');
-                status.children[0].classList.replace('bg-red-500', 'bg-green-500');
-                status.children[1].innerText = "En Vivo";
-
+                document.getElementById('status').innerHTML = '<div class="w-1.5 h-1.5 rounded-full bg-green-500"></div><span class="text-[8px] font-bold uppercase tracking-widest text-green-600">En Vivo</span>';
+                
                 onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'match'), (snap) => {
                     if (snap.exists()) {
                         state = snap.data();
@@ -187,26 +169,41 @@
                         
                         if (state.running) {
                             localSecs = state.secs + Math.floor((Date.now() - state.lastUpd) / 1000);
-                            if (!clockInterval) startClock();
+                            if (!timerInt) startT();
                         } else {
                             localSecs = state.secs;
-                            stopClock();
-                            render(localSecs);
+                            stopT();
+                            updateLists(localSecs);
                         }
                     } else {
                         setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'match'), state);
                     }
                 });
             });
-        } catch (e) { console.warn("Modo offline"); }
+        } catch(e) { console.log("Offline mode"); }
 
-        // --- ACCIONES ---
-        window.modScore = async (team, v) => {
-            const key = team === 'y' ? 'scoreY' : 'scoreO';
+        // --- ADMIN ACTIONS ---
+        window.tryLogin = () => {
+            const input = document.getElementById('pin-input');
+            if (input.value === ADMIN_PIN) {
+                document.body.classList.add('is-admin');
+                document.getElementById('admin-indicator').classList.remove('hidden');
+                document.getElementById('login-container').innerHTML = '<p class="text-center w-full font-black text-green-600 text-[10px] uppercase tracking-widest">✅ Modo Administrador Activo</p>';
+                lucide.createIcons();
+            } else {
+                input.value = "";
+                input.placeholder = "PIN INCORRECTO";
+                input.classList.add('bg-red-50');
+                setTimeout(() => { input.classList.remove('bg-red-50'); input.placeholder = "PIN Admin"; }, 1000);
+            }
+        };
+
+        window.changeScore = async (t, v) => {
+            const key = t === 'y' ? 'scoreY' : 'scoreO';
             await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'match'), { [key]: Math.max(0, state[key] + v) });
         };
 
-        window.toggleClock = async () => {
+        window.toggleTimer = async () => {
             await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'match'), {
                 running: !state.running,
                 secs: localSecs,
@@ -214,60 +211,37 @@
             });
         };
 
-        window.resetMatch = async () => {
-            if(!confirm("¿Resetear todo?")) return;
+        window.resetAll = async () => {
+            if(!confirm("¿Borrar todo?")) return;
             await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'match'), { scoreY: 0, scoreO: 0, secs: 0, running: false, lastUpd: Date.now() });
         };
 
-        function startClock() {
-            const btn = document.getElementById('btn-run');
-            btn.classList.replace('bg-indigo-600', 'bg-red-500');
-            btn.innerHTML = '<i data-lucide="pause" class="w-6 h-6 fill-current"></i> <span>Pausa</span>';
-            if(clockInterval) clearInterval(clockInterval);
-            clockInterval = setInterval(() => { localSecs++; render(localSecs); }, 1000);
+        function startT() {
+            const b = document.getElementById('btn-play');
+            if(b) b.innerHTML = '<i data-lucide="pause" class="w-4 h-4 fill-current"></i> Pausar';
+            if(b) b.classList.replace('bg-indigo-600', 'bg-red-500');
+            if(timerInt) clearInterval(timerInt);
+            timerInt = setInterval(() => { localSecs++; updateLists(localSecs); }, 1000);
             lucide.createIcons();
         }
 
-        function stopClock() {
-            const btn = document.getElementById('btn-run');
-            btn.classList.replace('bg-red-500', 'bg-indigo-600');
-            btn.innerHTML = '<i data-lucide="play" class="w-6 h-6 fill-current"></i> <span>Play</span>';
-            if(clockInterval) clearInterval(clockInterval);
-            clockInterval = null;
+        function stopT() {
+            const b = document.getElementById('btn-play');
+            if(b) b.innerHTML = '<i data-lucide="play" class="w-4 h-4 fill-current"></i> Reanudar';
+            if(b) b.classList.replace('bg-red-500', 'bg-indigo-600');
+            if(timerInt) clearInterval(timerInt);
+            timerInt = null;
             lucide.createIcons();
         }
 
-        // --- LOGIN LOGIC ---
-        let currentPin = "";
-        window.showLogin = () => document.getElementById('login-modal').classList.replace('hidden', 'flex');
-        window.hideLogin = () => { document.getElementById('login-modal').classList.replace('flex', 'hidden'); clearPin(); };
-        window.clearPin = () => { currentPin = ""; updatePinDots(); };
-        window.tapPin = (n) => {
-            currentPin += n;
-            updatePinDots();
-            if(currentPin === ADMIN_PIN) {
-                document.body.classList.add('is-admin');
-                hideLogin();
-                document.getElementById('login-trigger').innerHTML = '<i data-lucide="unlock" class="w-3 h-3 text-green-500"></i> Modo Admin Activo';
-                lucide.createIcons();
-            } else if(currentPin.length >= 4) {
-                setTimeout(clearPin, 200);
-            }
-        };
-        const updatePinDots = () => {
-            const dots = document.getElementById('pin-display').children;
-            for(let i=0; i<4; i++) dots[i].className = `w-3 h-3 rounded-full ${currentPin.length > i ? 'bg-indigo-600' : 'bg-slate-200'}`;
-        };
-
-        // Slider
         document.getElementById('slider').oninput = (e) => {
-            const min = parseInt(e.target.value);
-            document.getElementById('label-min').innerText = `Minuto ${min}`;
-            render(min * 60);
+            const m = parseInt(e.target.value);
+            document.getElementById('label-min').innerText = `Minuto ${m}`;
+            updateLists(m * 60);
         };
 
-        // INIT
-        render(0);
+        // INITIAL RENDER
+        updateLists(0);
         lucide.createIcons();
     </script>
 </body>
