@@ -2,169 +2,212 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rambleta Championship LIVE</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Rambleta LIVE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; -webkit-tap-highlight-color: transparent; }
         .player-card { transition: all 0.2s ease; }
-        .admin-only { display: none; }
-        .is-admin .admin-only { display: flex; }
-        .is-admin .not-admin { display: none; }
-        .is-admin .score-btn { display: flex !important; }
-        .score-btn { display: none; }
+        .admin-controls { display: none; }
+        body.is-admin .admin-controls { display: flex; }
+        body.is-admin .viewer-msg { display: none; }
+        .tab-active { border-bottom: 3px solid #fbbf24; color: #fbbf24; }
     </style>
 </head>
-<body class="min-h-screen text-slate-900 pb-20">
+<body class="min-h-screen pb-24">
 
-    <header class="bg-slate-900 text-white shadow-xl">
-        <div class="max-w-4xl mx-auto p-6 flex justify-between items-center">
-            <div class="text-left">
-                <h1 class="text-2xl font-black italic tracking-tighter text-yellow-400 uppercase leading-none">
-                    RAMBLETA
-                </h1>
-                <p class="text-[10px] text-slate-400 font-bold tracking-widest uppercase">Championship LIVE</p>
+    <!-- Header con Estado -->
+    <header class="bg-slate-900 text-white p-5 shadow-2xl">
+        <div class="max-w-md mx-auto flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-black italic text-yellow-400 leading-none">RAMBLETA</h1>
+                <p class="text-[9px] font-bold tracking-[0.2em] text-slate-400 uppercase">Championship 2024</p>
             </div>
-            <button onclick="checkAdmin()" id="admin-lock" class="p-2 rounded-full bg-slate-800 text-slate-500 border border-slate-700">
-                <i data-lucide="lock" class="w-4 h-4"></i>
-            </button>
+            <div id="status-dot" class="flex items-center gap-2 px-3 py-1 bg-slate-800 rounded-full border border-slate-700">
+                <div class="w-2 h-2 rounded-full bg-red-500"></div>
+                <span class="text-[9px] font-bold uppercase text-slate-300">Offline</span>
+            </div>
         </div>
     </header>
 
-    <main class="max-w-4xl mx-auto p-4 space-y-4">
+    <main class="max-w-md mx-auto p-4 space-y-4">
         
-        <!-- Marcador Compartido -->
-        <section class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
-            <div class="flex items-center justify-between gap-2">
-                <div class="flex-1 text-center">
-                    <p class="text-[10px] font-black uppercase text-yellow-600 mb-2">Amarillo</p>
-                    <div class="flex items-center justify-center gap-3">
-                        <button onclick="changeScore('yellow', -1)" class="score-btn w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-400">-</button>
-                        <span id="score-yellow" class="text-6xl font-black tabular-nums">0</span>
-                        <button onclick="changeScore('yellow', 1)" class="score-btn w-8 h-8 rounded-full bg-yellow-400 flex items-center justify-center text-yellow-900 shadow-md">+</button>
+        <!-- Marcador Principal -->
+        <div class="bg-white rounded-[2.5rem] p-8 shadow-xl border border-slate-100 relative overflow-hidden">
+            <div class="flex justify-between items-center relative z-10">
+                <div class="text-center flex-1">
+                    <span class="text-[10px] font-black uppercase text-yellow-600 tracking-tighter">Amarillo</span>
+                    <div class="text-6xl font-black tabular-nums my-2" id="score-y">0</div>
+                    <div class="admin-controls justify-center gap-2">
+                        <button onclick="modScore('y',-1)" class="w-10 h-10 rounded-full bg-slate-100 text-slate-400 font-bold">-</button>
+                        <button onclick="modScore('y',1)" class="w-10 h-10 rounded-full bg-yellow-400 text-yellow-900 font-bold shadow-lg">+</button>
                     </div>
                 </div>
-                <div class="text-slate-200 font-black italic text-xl">VS</div>
-                <div class="flex-1 text-center">
-                    <p class="text-[10px] font-black uppercase text-orange-600 mb-2">Naranja</p>
-                    <div class="flex items-center justify-center gap-3">
-                        <button onclick="changeScore('orange', -1)" class="score-btn w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-400">-</button>
-                        <span id="score-orange" class="text-6xl font-black tabular-nums">0</span>
-                        <button onclick="changeScore('orange', 1)" class="score-btn w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center text-white shadow-md">+</button>
-                    </div>
-                </div>
-            </div>
-            <p id="admin-msg" class="not-admin text-center text-[9px] text-slate-400 mt-4 uppercase font-bold tracking-widest italic">Modo Espectador: Solo Lectura</p>
-        </section>
-
-        <!-- Cronómetro -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="bg-white rounded-3xl p-5 shadow-sm border border-slate-200 flex flex-col items-center">
-                <div id="game-time" class="text-6xl font-black text-slate-800 tabular-nums mb-4 tracking-tighter">00:00</div>
-                
-                <!-- Botones Admin -->
-                <div class="admin-only w-full gap-2">
-                    <button id="btn-timer" onclick="toggleMatch()" class="flex-1 bg-indigo-600 text-white h-14 rounded-2xl font-black uppercase text-sm tracking-widest shadow-lg flex items-center justify-center gap-2">
-                        <i data-lucide="play" class="w-5 h-5"></i> <span>Empezar</span>
-                    </button>
-                    <button onclick="resetMatch()" class="bg-slate-100 text-slate-500 w-14 h-14 rounded-2xl flex items-center justify-center border border-slate-200">
-                        <i data-lucide="rotate-ccw" class="w-5 h-5"></i>
-                    </button>
-                </div>
-                <!-- Botón Espectador -->
-                <div class="not-admin w-full">
-                    <div class="w-full bg-slate-50 text-slate-400 h-14 rounded-2xl font-bold uppercase text-[10px] flex items-center justify-center gap-2 border border-dashed border-slate-200">
-                        <i data-lucide="clock" class="w-4 h-4"></i> Tiempo en tiempo real
+                <div class="font-black text-slate-200 italic text-2xl px-4">VS</div>
+                <div class="text-center flex-1">
+                    <span class="text-[10px] font-black uppercase text-orange-600 tracking-tighter">Naranja</span>
+                    <div class="text-6xl font-black tabular-nums my-2" id="score-o">0</div>
+                    <div class="admin-controls justify-center gap-2">
+                        <button onclick="modScore('o',-1)" class="w-10 h-10 rounded-full bg-slate-100 text-slate-400 font-bold">-</button>
+                        <button onclick="modScore('o',1)" class="w-10 h-10 rounded-full bg-orange-500 text-white font-bold shadow-lg">+</button>
                     </div>
                 </div>
             </div>
+            <p class="viewer-msg text-center text-[9px] font-bold text-slate-300 mt-4 tracking-widest italic uppercase">Vista de Espectador</p>
+        </div>
 
-            <!-- Simulador Local (Siempre disponible) -->
-            <div class="bg-white rounded-3xl p-5 shadow-sm border border-slate-200">
-                <div class="flex justify-between items-center mb-4">
-                    <span class="text-[10px] font-black uppercase text-slate-400">Previsión Local</span>
-                    <span id="label-min" class="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded-lg">Min 0</span>
+        <!-- Tiempo y Control -->
+        <div class="bg-white rounded-3xl p-6 shadow-lg border border-slate-100 flex flex-col items-center">
+            <div id="display-time" class="text-7xl font-black text-slate-800 tabular-nums tracking-tighter mb-6">00:00</div>
+            
+            <div class="admin-controls w-full gap-3">
+                <button id="btn-run" onclick="toggleClock()" class="flex-[2] h-16 bg-indigo-600 text-white rounded-2xl font-black uppercase tracking-widest shadow-xl flex items-center justify-center gap-2">
+                    <i data-lucide="play" class="w-6 h-6 fill-current"></i> <span>Play</span>
+                </button>
+                <button onclick="resetMatch()" class="flex-1 h-16 bg-slate-100 text-slate-400 rounded-2xl flex items-center justify-center">
+                    <i data-lucide="refresh-cw" class="w-6 h-6"></i>
+                </button>
+            </div>
+
+            <!-- Slider Local -->
+            <div class="w-full mt-2">
+                <div class="flex justify-between text-[10px] font-black text-slate-400 uppercase mb-2">
+                    <span>Previsión de porteros</span>
+                    <span id="label-min" class="text-indigo-600">Minuto 0</span>
                 </div>
-                <input type="range" id="slider" min="0" max="60" step="5" value="0" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600">
-                <p class="text-[9px] text-slate-400 text-center mt-2 italic">Desliza para ver quién entra al campo en el futuro.</p>
+                <input type="range" id="slider" min="0" max="60" step="5" value="0" class="w-full h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-indigo-600">
             </div>
         </div>
 
-        <!-- Equipos -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Listas de Jugadores -->
+        <div class="grid grid-cols-2 gap-4">
             <div class="space-y-3">
-                <h2 class="bg-yellow-400 p-3 rounded-xl font-black text-yellow-900 text-xs uppercase italic tracking-widest">Equipo Amarillo 💛</h2>
-                <div id="list-yellow" class="space-y-2"></div>
+                <h3 class="text-[10px] font-black uppercase text-yellow-600 pl-2">Equipo Amarillo</h3>
+                <div id="list-y" class="space-y-2"></div>
             </div>
             <div class="space-y-3">
-                <h2 class="bg-orange-500 p-3 rounded-xl font-black text-white text-xs uppercase italic tracking-widest">Equipo Naranja 🧡</h2>
-                <div id="list-orange" class="space-y-2"></div>
+                <h3 class="text-[10px] font-black uppercase text-orange-600 pl-2">Equipo Naranja</h3>
+                <div id="list-o" class="space-y-2"></div>
             </div>
+        </div>
+
+        <!-- Footer Admin Login -->
+        <div class="pt-8 pb-4 text-center">
+            <button id="login-trigger" onclick="showLogin()" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2 mx-auto opacity-50 hover:opacity-100">
+                <i data-lucide="lock" class="w-3 h-3"></i> Acceso Organización
+            </button>
         </div>
     </main>
+
+    <!-- Modal Login -->
+    <div id="login-modal" class="fixed inset-0 bg-slate-900/90 backdrop-blur-sm z-50 hidden items-center justify-center p-6">
+        <div class="bg-white rounded-3xl p-8 w-full max-w-xs text-center">
+            <h4 class="font-black uppercase text-sm mb-6">PIN de Control</h4>
+            <div class="grid grid-cols-3 gap-3 mb-6">
+                {[1,2,3,4,5,6,7,8,9].map(n => `<button onclick="tapPin('${n}')" class="h-14 bg-slate-50 rounded-xl font-bold text-xl">${n}</button>`).join('')}
+                <button onclick="hideLogin()" class="bg-red-50 text-red-400 rounded-xl font-bold flex items-center justify-center"><i data-lucide="x" class="w-6 h-6"></i></button>
+                <button onclick="tapPin('0')" class="h-14 bg-slate-50 rounded-xl font-bold text-xl">0</button>
+                <button onclick="clearPin()" class="bg-slate-100 rounded-xl font-bold flex items-center justify-center"><i data-lucide="delete" class="w-6 h-6"></i></button>
+            </div>
+            <div id="pin-display" class="flex justify-center gap-4 h-4 mb-4">
+                <div class="w-3 h-3 rounded-full bg-slate-200"></div>
+                <div class="w-3 h-3 rounded-full bg-slate-200"></div>
+                <div class="w-3 h-3 rounded-full bg-slate-200"></div>
+                <div class="w-3 h-3 rounded-full bg-slate-200"></div>
+            </div>
+        </div>
+    </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getFirestore, doc, onSnapshot, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
-        // CONFIGURACIÓN DE JUGADORES
+        // CONFIGURACIÓN DATOS
         const playersYellow = ["Víctor", "Guillermo", "Mikel", "Hadi", "Michele", "David"];
         const playersOrange = ["Aureli", "Ayoub II", "Gabriel", "Vila", "Robert", "Mike"];
-        
-        const appId = "rambleta-v4-sync";
+        const ADMIN_PIN = "1234";
+
+        const appId = "rambleta-final-v5";
         let state = { scoreY: 0, scoreO: 0, secs: 0, running: false, lastUpd: Date.now() };
         let localSecs = 0;
-        let timer = null;
+        let clockInterval = null;
         let db;
 
-        // --- AUTH & SYNC ---
-        const config = JSON.parse(__firebase_config);
-        const app = initializeApp(config);
-        db = getFirestore(app);
-        const auth = getAuth(app);
-
-        signInAnonymously(auth).then(() => {
-            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'match');
-            onSnapshot(docRef, (snap) => {
-                if (snap.exists()) {
-                    state = snap.data();
-                    updateUIFromState();
-                } else {
-                    setDoc(docRef, state);
-                }
-            });
-        });
-
-        function updateUIFromState() {
-            document.getElementById('score-yellow').innerText = state.scoreY;
-            document.getElementById('score-orange').innerText = state.scoreO;
+        // --- RENDERIZADO INICIAL ---
+        const render = (s) => {
+            const m = Math.floor(s / 60).toString().padStart(2, '0');
+            const sc = (s % 60).toString().padStart(2, '0');
+            document.getElementById('display-time').innerText = `${m}:${sc}`;
             
-            if (state.running) {
-                const now = Date.now();
-                const diff = Math.floor((now - state.lastUpd) / 1000);
-                localSecs = state.secs + diff;
-                if (!timer) startVisualTimer();
-            } else {
-                localSecs = state.secs;
-                stopVisualTimer();
-                render(localSecs);
-            }
-        }
-
-        // --- ACCIONES ADMIN ---
-        window.changeScore = async (team, v) => {
-            if (!document.body.classList.contains('is-admin')) return;
-            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'match');
-            const key = team === 'yellow' ? 'scoreY' : 'scoreO';
-            await updateDoc(docRef, { [key]: Math.max(0, state[key] + v) });
+            const iter = Math.floor(s / 300);
+            drawList('list-y', playersYellow, iter, 'yellow');
+            drawList('list-o', playersOrange, iter, 'orange');
+            lucide.createIcons();
         };
 
-        window.toggleMatch = async () => {
-            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'match');
-            await updateDoc(docRef, {
+        const drawList = (id, list, iter, color) => {
+            const el = document.getElementById(id);
+            let ord = [...list];
+            for(let i=0; i<iter; i++) ord.unshift(ord.pop());
+            
+            el.innerHTML = ord.map((name, i) => {
+                let role = i===2 ? '🧤' : (i===5 ? '💤' : '🏃');
+                let bg = i===5 ? 'bg-slate-50 opacity-40' : 'bg-white shadow-sm';
+                if(i===2) bg = color === 'yellow' ? 'bg-yellow-50 border border-yellow-200 ring-2 ring-yellow-400/20' : 'bg-orange-50 border border-orange-200 ring-2 ring-orange-500/20';
+                
+                return `
+                    <div class="p-3 rounded-2xl border ${bg} flex items-center justify-between">
+                        <span class="font-bold text-xs truncate mr-1">${name}</span>
+                        <span class="text-xs">${role}</span>
+                    </div>
+                `;
+            }).join('');
+        };
+
+        // --- FIREBASE SYNC ---
+        try {
+            const config = JSON.parse(__firebase_config);
+            const app = initializeApp(config);
+            db = getFirestore(app);
+            const auth = getAuth(app);
+
+            signInAnonymously(auth).then(() => {
+                const status = document.getElementById('status-dot');
+                status.children[0].classList.replace('bg-red-500', 'bg-green-500');
+                status.children[1].innerText = "En Vivo";
+
+                onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'match'), (snap) => {
+                    if (snap.exists()) {
+                        state = snap.data();
+                        document.getElementById('score-y').innerText = state.scoreY;
+                        document.getElementById('score-o').innerText = state.scoreO;
+                        
+                        if (state.running) {
+                            localSecs = state.secs + Math.floor((Date.now() - state.lastUpd) / 1000);
+                            if (!clockInterval) startClock();
+                        } else {
+                            localSecs = state.secs;
+                            stopClock();
+                            render(localSecs);
+                        }
+                    } else {
+                        setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'match'), state);
+                    }
+                });
+            });
+        } catch (e) { console.warn("Modo offline"); }
+
+        // --- ACCIONES ---
+        window.modScore = async (team, v) => {
+            const key = team === 'y' ? 'scoreY' : 'scoreO';
+            await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'match'), { [key]: Math.max(0, state[key] + v) });
+        };
+
+        window.toggleClock = async () => {
+            await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'match'), {
                 running: !state.running,
                 secs: localSecs,
                 lastUpd: Date.now()
@@ -172,89 +215,60 @@
         };
 
         window.resetMatch = async () => {
-            if(!confirm("¿Resetear marcador y tiempo para todos?")) return;
-            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'match');
-            await setDoc(docRef, { scoreY: 0, scoreO: 0, secs: 0, running: false, lastUpd: Date.now() });
+            if(!confirm("¿Resetear todo?")) return;
+            await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'match'), { scoreY: 0, scoreO: 0, secs: 0, running: false, lastUpd: Date.now() });
         };
 
-        // --- RENDERIZADO ---
-        function render(s) {
-            const m = Math.floor(s / 60).toString().padStart(2, '0');
-            const sc = (s % 60).toString().padStart(2, '0');
-            document.getElementById('game-time').innerText = `${m}:${sc}`;
-            
-            const iter = Math.floor(s / 300);
-            renderList('list-yellow', playersYellow, iter, 'yellow');
-            renderList('list-orange', playersOrange, iter, 'orange');
-            lucide.createIcons();
-        }
-
-        function renderList(id, p, iter, color) {
-            const el = document.getElementById(id);
-            el.innerHTML = '';
-            let ord = [...p];
-            for(let i=0; i<iter; i++) ord.unshift(ord.pop());
-            
-            ord.forEach((name, i) => {
-                let role = i===2 ? 'Portero' : (i===5 ? 'Banquillo' : 'Campo');
-                let bg = i===5 ? 'bg-slate-50 opacity-50 border-dashed' : 'bg-white shadow-sm';
-                if(i===2) bg = color==='yellow' ? 'bg-yellow-50 border-yellow-300 ring-2 ring-yellow-400/20' : 'bg-orange-50 border-orange-300 ring-2 ring-orange-500/20';
-                
-                const card = document.createElement('div');
-                card.className = `player-card p-3 rounded-2xl border flex items-center justify-between ${bg}`;
-                card.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <i data-lucide="${i===2?'shield':(i===5?'coffee':'user')}" class="w-4 h-4"></i>
-                        <span class="font-bold text-sm tracking-tight">${name}</span>
-                    </div>
-                    <span class="text-[8px] font-black uppercase px-2 py-1 rounded-lg ${i===2?'bg-slate-900 text-white':'bg-slate-100 text-slate-400'}">${role}</span>
-                `;
-                el.appendChild(card);
-            });
-        }
-
-        function startVisualTimer() {
-            if (timer) clearInterval(timer);
-            const btn = document.getElementById('btn-timer');
+        function startClock() {
+            const btn = document.getElementById('btn-run');
             btn.classList.replace('bg-indigo-600', 'bg-red-500');
-            btn.innerHTML = '<i data-lucide="pause" class="w-5 h-5"></i> <span>Pausar</span>';
-            timer = setInterval(() => { localSecs++; render(localSecs); }, 1000);
+            btn.innerHTML = '<i data-lucide="pause" class="w-6 h-6 fill-current"></i> <span>Pausa</span>';
+            if(clockInterval) clearInterval(clockInterval);
+            clockInterval = setInterval(() => { localSecs++; render(localSecs); }, 1000);
             lucide.createIcons();
         }
 
-        function stopVisualTimer() {
-            if (timer) clearInterval(timer);
-            timer = null;
-            const btn = document.getElementById('btn-timer');
-            if(btn) {
-                btn.classList.replace('bg-red-500', 'bg-indigo-600');
-                btn.innerHTML = '<i data-lucide="play" class="w-5 h-5"></i> <span>Reanudar</span>';
-            }
+        function stopClock() {
+            const btn = document.getElementById('btn-run');
+            btn.classList.replace('bg-red-500', 'bg-indigo-600');
+            btn.innerHTML = '<i data-lucide="play" class="w-6 h-6 fill-current"></i> <span>Play</span>';
+            if(clockInterval) clearInterval(clockInterval);
+            clockInterval = null;
             lucide.createIcons();
         }
 
-        // --- LOGIN ADMIN ---
-        window.checkAdmin = () => {
-            const pass = prompt("Introduce la clave de Administrador:");
-            if (pass === "1234") {
+        // --- LOGIN LOGIC ---
+        let currentPin = "";
+        window.showLogin = () => document.getElementById('login-modal').classList.replace('hidden', 'flex');
+        window.hideLogin = () => { document.getElementById('login-modal').classList.replace('flex', 'hidden'); clearPin(); };
+        window.clearPin = () => { currentPin = ""; updatePinDots(); };
+        window.tapPin = (n) => {
+            currentPin += n;
+            updatePinDots();
+            if(currentPin === ADMIN_PIN) {
                 document.body.classList.add('is-admin');
-                document.getElementById('admin-lock').classList.replace('text-slate-500', 'text-yellow-400');
-                document.getElementById('admin-lock').classList.replace('bg-slate-800', 'bg-slate-700');
-                document.getElementById('admin-lock').innerHTML = '<i data-lucide="unlock" class="w-4 h-4"></i>';
+                hideLogin();
+                document.getElementById('login-trigger').innerHTML = '<i data-lucide="unlock" class="w-3 h-3 text-green-500"></i> Modo Admin Activo';
                 lucide.createIcons();
-            } else {
-                alert("Clave incorrecta.");
+            } else if(currentPin.length >= 4) {
+                setTimeout(clearPin, 200);
             }
         };
+        const updatePinDots = () => {
+            const dots = document.getElementById('pin-display').children;
+            for(let i=0; i<4; i++) dots[i].className = `w-3 h-3 rounded-full ${currentPin.length > i ? 'bg-indigo-600' : 'bg-slate-200'}`;
+        };
 
-        // Slider Local
+        // Slider
         document.getElementById('slider').oninput = (e) => {
             const min = parseInt(e.target.value);
-            document.getElementById('label-min').innerText = `Min ${min}`;
+            document.getElementById('label-min').innerText = `Minuto ${min}`;
             render(min * 60);
         };
 
+        // INIT
         render(0);
+        lucide.createIcons();
     </script>
 </body>
 </html>
