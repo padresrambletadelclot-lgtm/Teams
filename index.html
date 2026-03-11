@@ -17,114 +17,107 @@
 <body class="min-h-screen pb-32">
 
     <!-- Navbar -->
-    <nav class="bg-slate-900 text-white p-4 sticky top-0 z-40 shadow-lg">
+    <nav class="bg-slate-900 text-white p-4 sticky top-0 z-40 shadow-lg border-b border-slate-700">
         <div class="max-w-md mx-auto flex justify-between items-center">
             <div>
                 <h1 class="text-xl font-black italic text-yellow-400">RAMBLETA LIVE</h1>
-                <div id="status" class="flex items-center gap-1.5 opacity-80">
-                    <div id="status-dot" class="w-1.5 h-1.5 rounded-full bg-yellow-500"></div>
-                    <span id="status-text" class="text-[8px] font-bold uppercase tracking-widest text-slate-300">Modo Local</span>
+                <div id="status" class="flex items-center gap-1.5">
+                    <div id="status-dot" class="w-1.5 h-1.5 rounded-full bg-red-500"></div>
+                    <span id="status-text" class="text-[8px] font-bold uppercase tracking-widest text-slate-400">Sin Conexión</span>
                 </div>
             </div>
-            <div id="admin-badge" class="hidden bg-green-500 text-white text-[8px] font-black px-2 py-1 rounded uppercase">Admin</div>
+            <div id="admin-badge" class="hidden bg-yellow-500 text-slate-900 text-[8px] font-black px-2 py-1 rounded uppercase animate-bounce">Admin</div>
         </div>
     </nav>
 
     <main class="max-w-md mx-auto p-4 space-y-4">
         
         <!-- Marcador -->
-        <div class="bg-white rounded-[2rem] p-6 shadow-sm border border-slate-200">
+        <div class="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-200">
             <div class="flex justify-between items-center text-center">
                 <div class="flex-1">
-                    <p class="text-[9px] font-black text-yellow-600 uppercase tracking-widest mb-1">Amarillo</p>
-                    <div class="text-6xl font-black tabular-nums" id="score-y">0</div>
-                    <div class="admin-controls justify-center gap-2 mt-2">
-                        <button onclick="changeScore('y', -1)" class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 font-bold">-</button>
-                        <button onclick="changeScore('y', 1)" class="w-10 h-10 rounded-full bg-yellow-400 flex items-center justify-center text-yellow-900 font-bold shadow-sm">+</button>
+                    <p class="text-[10px] font-black text-yellow-600 uppercase tracking-widest mb-1">Amarillo</p>
+                    <div class="text-7xl font-black tabular-nums tracking-tighter" id="score-y">0</div>
+                    <div class="admin-controls justify-center gap-2 mt-4">
+                        <button onclick="changeScore('y', -1)" class="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 text-2xl font-bold border border-slate-200">-</button>
+                        <button onclick="changeScore('y', 1)" class="w-12 h-12 rounded-2xl bg-yellow-400 flex items-center justify-center text-yellow-900 text-2xl font-bold shadow-md border border-yellow-500">+</button>
                     </div>
                 </div>
-                <div class="font-black text-slate-200 italic mx-4 text-xl">VS</div>
+                <div class="font-black text-slate-100 italic mx-4 text-3xl">VS</div>
                 <div class="flex-1">
-                    <p class="text-[9px] font-black text-orange-600 uppercase tracking-widest mb-1">Naranja</p>
-                    <div class="text-6xl font-black tabular-nums" id="score-o">0</div>
-                    <div class="admin-controls justify-center gap-2 mt-2">
-                        <button onclick="changeScore('o', -1)" class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 font-bold">-</button>
-                        <button onclick="changeScore('o', 1)" class="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center text-white font-bold shadow-sm">+</button>
+                    <p class="text-[10px] font-black text-orange-600 uppercase tracking-widest mb-1">Naranja</p>
+                    <div class="text-7xl font-black tabular-nums tracking-tighter" id="score-o">0</div>
+                    <div class="admin-controls justify-center gap-2 mt-4">
+                        <button onclick="changeScore('o', -1)" class="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 text-2xl font-bold border border-slate-200">-</button>
+                        <button onclick="changeScore('o', 1)" class="w-12 h-12 rounded-2xl bg-orange-500 flex items-center justify-center text-white text-2xl font-bold shadow-md border border-orange-600">+</button>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Cronómetro -->
-        <div class="bg-white rounded-[2rem] p-6 shadow-sm border border-slate-200 flex flex-col items-center">
-            <div id="timer" class="text-7xl font-black text-slate-800 tabular-nums tracking-tighter mb-4">00:00</div>
+        <div class="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-200 flex flex-col items-center">
+            <div id="timer" class="text-7xl font-black text-slate-800 tabular-nums tracking-tighter mb-6">00:00</div>
             
-            <div class="admin-controls w-full gap-2">
-                <button id="btn-play" onclick="toggleTimer()" class="flex-1 h-14 bg-indigo-600 text-white rounded-2xl font-black uppercase text-xs tracking-widest shadow-lg flex items-center justify-center gap-2">
-                    <i data-lucide="play" class="w-4 h-4 fill-current"></i> Iniciar
+            <div class="admin-controls w-full gap-3">
+                <button id="btn-play" onclick="toggleTimer()" class="flex-1 h-16 bg-indigo-600 text-white rounded-2xl font-black uppercase text-sm tracking-widest shadow-lg flex items-center justify-center gap-3">
+                    <i data-lucide="play" class="w-5 h-5 fill-current"></i> Iniciar
                 </button>
-                <button onclick="resetAll()" class="w-14 h-14 bg-slate-100 text-slate-400 rounded-2xl flex items-center justify-center border border-slate-200">
-                    <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                <button onclick="resetAll()" class="w-16 h-16 bg-slate-100 text-slate-400 rounded-2xl flex items-center justify-center border border-slate-200 active:bg-red-50 active:text-red-500">
+                    <i data-lucide="rotate-ccw" class="w-6 h-6"></i>
                 </button>
             </div>
             
-            <div class="viewer-only py-2 px-6 bg-slate-50 rounded-full border border-slate-100 text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] italic">
-                Sincronizado en tiempo real
+            <div class="viewer-only py-3 px-8 bg-slate-50 rounded-2xl border border-slate-100 text-[10px] font-black text-slate-400 uppercase tracking-widest italic flex items-center gap-2">
+                <i data-lucide="eye" class="w-3 h-3"></i> Sincronizado en vivo
             </div>
-        </div>
-
-        <!-- Simulador (Siempre funciona) -->
-        <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm">
-            <div class="flex justify-between items-center mb-3">
-                <span class="text-[10px] font-black text-slate-400 uppercase tracking-wider">Simulador de Rotación</span>
-                <span id="label-min" class="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-100">0 min</span>
-            </div>
-            <input type="range" id="slider" min="0" max="60" step="5" value="0" class="w-full h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-indigo-600">
         </div>
 
         <!-- Jugadores -->
         <div class="grid grid-cols-2 gap-4">
-            <div class="space-y-2">
-                <h3 class="text-[10px] font-black uppercase text-yellow-600 pl-1">Amarillo 💛</h3>
+            <div class="space-y-3">
+                <h3 class="text-[10px] font-black uppercase text-yellow-600 pl-2">Equipo Amarillo</h3>
                 <div id="list-y" class="space-y-2"></div>
             </div>
-            <div class="space-y-2">
-                <h3 class="text-[10px] font-black uppercase text-orange-600 pl-1">Naranja 🧡</h3>
+            <div class="space-y-3">
+                <h3 class="text-[10px] font-black uppercase text-orange-600 pl-2">Equipo Naranja</h3>
                 <div id="list-o" class="space-y-2"></div>
             </div>
         </div>
     </main>
 
-    <!-- Admin Login Bar -->
-    <div class="fixed bottom-0 inset-x-0 p-4 bg-white/90 backdrop-blur-md border-t border-slate-200 z-50 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
-        <div class="max-w-md mx-auto flex gap-2 items-center" id="admin-panel">
-            <input type="password" id="pin-input" placeholder="PIN Administrador" class="flex-1 h-12 bg-slate-100 border-none rounded-xl px-4 text-center font-bold tracking-widest focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
-            <button onclick="checkAdmin()" class="h-12 px-6 bg-slate-900 text-white rounded-xl font-black text-xs uppercase tracking-widest active:scale-95 transition-transform">Entrar</button>
+    <!-- Admin Panel -->
+    <div class="fixed bottom-0 inset-x-0 p-4 bg-white/95 backdrop-blur-md border-t border-slate-200 z-50">
+        <div class="max-w-md mx-auto" id="admin-panel">
+            <div class="flex gap-2 items-center">
+                <input type="password" id="pin-input" placeholder="PIN Administrador" class="flex-1 h-12 bg-slate-100 border-none rounded-xl px-4 text-center font-bold tracking-[0.5em] focus:ring-2 focus:ring-indigo-500 outline-none">
+                <button onclick="checkAdmin()" class="h-12 px-6 bg-slate-900 text-white rounded-xl font-black text-xs uppercase tracking-widest">Entrar</button>
+            </div>
         </div>
-        <p id="admin-info" class="text-[8px] text-center text-slate-400 mt-2 font-bold uppercase tracking-widest">Panel de Control Exclusivo Organización</p>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, doc, onSnapshot, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, onSnapshot, setDoc, updateDoc, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
         const playersY = ["Víctor", "Guillermo", "Mikel", "Hadi", "Michele", "David"];
         const playersO = ["Aureli", "Ayoub II", "Gabriel", "Vila", "Robert", "Mike"];
         const PIN = "1234";
-        const appId = "rambleta-v7-final";
-
+        
+        // Identificadores de entorno
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'rambleta-champ-v8';
+        let db = null;
+        let auth = null;
         let state = { scoreY: 0, scoreO: 0, secs: 0, running: false, lastUpd: Date.now() };
         let localSecs = 0;
         let timerInt = null;
-        let db = null;
 
-        // --- UI DRAW ---
+        // --- RENDERIZADO ---
         const render = (s) => {
             const m = Math.floor(s / 60).toString().padStart(2, '0');
             const sc = (s % 60).toString().padStart(2, '0');
             document.getElementById('timer').innerText = `${m}:${sc}`;
-            
             const iter = Math.floor(s / 300);
             drawTeam('list-y', playersY, iter, 'yellow');
             drawTeam('list-o', playersO, iter, 'orange');
@@ -135,43 +128,45 @@
             const el = document.getElementById(id);
             let ord = [...list];
             for(let i=0; i<iter; i++) ord.unshift(ord.pop());
-            
             el.innerHTML = ord.map((name, i) => {
                 let role = i===2 ? '🧤' : (i===5 ? '💤' : '🏃');
-                let bg = i===5 ? 'bg-slate-50 opacity-40 grayscale' : 'bg-white shadow-sm';
-                if(i===2) bg = color === 'yellow' ? 'bg-yellow-50 border border-yellow-200' : 'bg-orange-50 border border-orange-200';
-                
-                return `
-                    <div class="p-3 rounded-xl border border-slate-100 ${bg} flex items-center justify-between text-[11px]">
-                        <span class="font-bold truncate text-slate-700">${name}</span>
-                        <span class="text-lg">${role}</span>
-                    </div>
-                `;
+                let bg = i===5 ? 'bg-slate-50 opacity-40 grayscale border-dashed' : 'bg-white shadow-sm';
+                if(i===2) bg = color === 'yellow' ? 'bg-yellow-50 border-yellow-200 ring-2 ring-yellow-400/10' : 'bg-orange-50 border-orange-200 ring-2 ring-orange-500/10';
+                return `<div class="p-3 rounded-2xl border border-slate-100 ${bg} flex items-center justify-between text-[11px] font-bold text-slate-700"><span>${name}</span><span>${role}</span></div>`;
             }).join('');
         };
 
-        // --- FIREBASE INIT (NON-BLOCKING) ---
-        const startSync = async () => {
+        // --- CONEXIÓN FIREBASE (MANDATORIO) ---
+        const initFirebase = async () => {
             try {
-                const config = JSON.parse(__firebase_config);
-                const app = initializeApp(config);
-                db = getFirestore(app);
-                const auth = getAuth(app);
-
-                await signInAnonymously(auth);
+                if (typeof __firebase_config === 'undefined') throw new Error("Config no encontrada");
                 
+                const firebaseConfig = JSON.parse(__firebase_config);
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                // Regla 3: Auth antes que nada
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
                 const dot = document.getElementById('status-dot');
                 const text = document.getElementById('status-text');
-                dot.className = "w-1.5 h-1.5 rounded-full bg-green-500";
+                dot.className = "w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse";
                 text.innerText = "Sincronizado";
                 text.className = "text-[8px] font-bold uppercase tracking-widest text-green-500";
 
-                onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'match'), (snap) => {
+                // Regla 1: Ruta estricta de Firestore
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'match_state');
+                
+                onSnapshot(docRef, (snap) => {
                     if (snap.exists()) {
                         state = snap.data();
                         document.getElementById('score-y').innerText = state.scoreY;
                         document.getElementById('score-o').innerText = state.scoreO;
-                        
                         if (state.running) {
                             localSecs = state.secs + Math.floor((Date.now() - state.lastUpd) / 1000);
                             if (!timerInt) startLocalTimer();
@@ -181,46 +176,37 @@
                             render(localSecs);
                         }
                     } else {
-                        setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'match'), state);
+                        setDoc(docRef, state);
                     }
+                }, (error) => {
+                    console.error("Error en Snapshot:", error);
+                    text.innerText = "Error Permisos";
                 });
+
             } catch(e) {
-                console.warn("Offline: Los cambios no se enviarán a otros dispositivos.");
+                console.warn("Fallo en Firebase. Usando modo local.", e);
+                document.getElementById('status-text').innerText = "Modo Local (Offline)";
             }
         };
 
-        // --- ADMIN LOGIN ---
+        // --- ACCIONES ---
         window.checkAdmin = () => {
-            const pin = document.getElementById('pin-input').value;
-            if (pin === PIN) {
+            if (document.getElementById('pin-input').value === PIN) {
                 document.body.classList.add('is-admin');
                 document.getElementById('admin-badge').classList.remove('hidden');
-                document.getElementById('admin-panel').classList.add('hidden');
-                document.getElementById('admin-info').innerText = "✅ Estás en modo Administrador";
-                document.getElementById('admin-info').className = "text-[8px] text-center text-green-600 mt-2 font-black uppercase";
-                lucide.createIcons();
+                document.getElementById('admin-panel').innerHTML = `<p class="text-center w-full font-black text-indigo-600 text-[10px] uppercase tracking-[0.2em]">Acceso Administrador Confirmado</p>`;
             } else {
-                const input = document.getElementById('pin-input');
-                input.value = "";
-                input.placeholder = "PIN INCORRECTO";
-                input.classList.add('ring-2', 'ring-red-500');
-                setTimeout(() => {
-                    input.classList.remove('ring-2', 'ring-red-500');
-                    input.placeholder = "PIN Administrador";
-                }, 1500);
+                alert("PIN incorrecto");
             }
         };
 
-        // --- CONTROL ACTIONS ---
         window.changeScore = async (t, v) => {
             const key = t === 'y' ? 'scoreY' : 'scoreO';
             state[key] = Math.max(0, state[key] + v);
-            document.getElementById(`score-${t}`).innerText = state[key]; // Update UI immediately
-            
+            document.getElementById(`score-${t}`).innerText = state[key];
             if (db) {
-                try {
-                    await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'match'), { [key]: state[key] });
-                } catch(e) {}
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'match_state');
+                await updateDoc(docRef, { [key]: state[key] });
             }
         };
 
@@ -228,43 +214,30 @@
             state.running = !state.running;
             state.secs = localSecs;
             state.lastUpd = Date.now();
-            
-            if (state.running) startLocalTimer();
-            else stopLocalTimer();
-
+            if (state.running) startLocalTimer(); else stopLocalTimer();
             if (db) {
-                try {
-                    await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'match'), {
-                        running: state.running,
-                        secs: state.secs,
-                        lastUpd: state.lastUpd
-                    });
-                } catch(e) {}
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'match_state');
+                await updateDoc(docRef, { running: state.running, secs: state.secs, lastUpd: state.lastUpd });
             }
         };
 
         window.resetAll = async () => {
-            if(!confirm("¿Deseas reiniciar el marcador y tiempo para todos?")) return;
+            if(!confirm("¿Resetear partido?")) return;
             state = { scoreY: 0, scoreO: 0, secs: 0, running: false, lastUpd: Date.now() };
             localSecs = 0;
-            stopLocalTimer();
             render(0);
             document.getElementById('score-y').innerText = 0;
             document.getElementById('score-o').innerText = 0;
-
             if (db) {
-                try {
-                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'match'), state);
-                } catch(e) {}
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'match_state');
+                await setDoc(docRef, state);
             }
         };
 
         function startLocalTimer() {
             const b = document.getElementById('btn-play');
-            if(b) {
-                b.innerHTML = '<i data-lucide="pause" class="w-4 h-4 fill-current"></i> Pausar';
-                b.classList.replace('bg-indigo-600', 'bg-red-500');
-            }
+            if(b) b.innerHTML = '<i data-lucide="pause" class="w-5 h-5 fill-current"></i> Pausar';
+            if(b) b.classList.replace('bg-indigo-600', 'bg-red-500');
             if(timerInt) clearInterval(timerInt);
             timerInt = setInterval(() => { localSecs++; render(localSecs); }, 1000);
             lucide.createIcons();
@@ -272,26 +245,16 @@
 
         function stopLocalTimer() {
             const b = document.getElementById('btn-play');
-            if(b) {
-                b.innerHTML = '<i data-lucide="play" class="w-4 h-4 fill-current"></i> Reanudar';
-                b.classList.replace('bg-red-500', 'bg-indigo-600');
-            }
+            if(b) b.innerHTML = '<i data-lucide="play" class="w-5 h-5 fill-current"></i> Iniciar';
+            if(b) b.classList.replace('bg-red-500', 'bg-indigo-600');
             if(timerInt) clearInterval(timerInt);
             timerInt = null;
             lucide.createIcons();
         }
 
-        // Slider logic
-        document.getElementById('slider').oninput = (e) => {
-            const m = parseInt(e.target.value);
-            document.getElementById('label-min').innerText = `${m} min`;
-            render(m * 60);
-        };
-
-        // Initialize UI before sync
+        // Init
         render(0);
-        startSync();
-        lucide.createIcons();
+        initFirebase();
     </script>
 </body>
 </html>
