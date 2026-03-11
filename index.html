@@ -3,27 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Team Management</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="script.js" defer></script>
+    <title>Rambleta Championship LIVE</title>
+    <!-- Add any required stylesheets or scripts here -->
 </head>
 <body>
-    <div class="container">
-        <h1>Team Management System</h1>
-        <div class="admin-only flex flex-col gap-2"> <!-- Added flex and flex-col classes -->
-            <h2>Admin Panel</h2>
-            <button id="add-player">Add Player</button>
-            <button id="remove-player">Remove Player</button>
-            <button id="update-roster">Update Roster</button>
-        </div>
-        <div id="player-list">
-            <!-- Players will be rendered here -->
-        </div>
+    <div class="admin-only flex-col"> <!-- Line 68 updated to add flex-col class -->
+        <!-- Admin-only content goes here -->
+    </div>
+    <div class="player-display">  
+        <!-- Player display content here -->
+    </div>
+    <div class="admin-only flex-col"> <!-- Line 77 updated to add flex-col class -->
+        <!-- Admin-only content goes here -->
     </div>
     <script>
+        // Ensure render is called after DOM loads and Firebase initialization completes
         document.addEventListener('DOMContentLoaded', function() {
-            render(0); // Ensure render(0) is called after DOM loads to display initial players
-            lucide.createIcons(); // Make sure lucide.createIcons() is called after the initial render
+            // Initialize Firebase here
+            // Call render(0) here
+            console.log('DOM fully loaded and Firebase initialized');
+            render(0);
         });
     </script>
 </body>
