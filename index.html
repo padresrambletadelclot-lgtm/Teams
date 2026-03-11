@@ -1,30 +1,30 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>Player Display Fix</title>
-    <style>
-        .admin-only {
-            display: flex;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Management</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js" defer></script>
 </head>
 <body>
-    <script>
-        function render(index) {
-            // Properly call render(0) to display players
-            if (index === 0) {
-                // logic to display players...
-            }
-        }
-
-        function updateUIFromState(state) {
-            // Ensure to call render when the match is not running
-            if (!state.matchRunning) {
-                render(0);
-            }
-        }
-    </script>
-    <div class="admin-only">
-        <!-- Admin content here -->
+    <div class="container">
+        <h1>Team Management System</h1>
+        <div class="admin-only flex flex-col gap-2"> <!-- Added flex and flex-col classes -->
+            <h2>Admin Panel</h2>
+            <button id="add-player">Add Player</button>
+            <button id="remove-player">Remove Player</button>
+            <button id="update-roster">Update Roster</button>
+        </div>
+        <div id="player-list">
+            <!-- Players will be rendered here -->
+        </div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            render(0); // Ensure render(0) is called after DOM loads to display initial players
+            lucide.createIcons(); // Make sure lucide.createIcons() is called after the initial render
+        });
+    </script>
 </body>
 </html>
