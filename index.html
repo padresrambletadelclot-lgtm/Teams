@@ -111,8 +111,9 @@
             appId: "1:690933795763:web:55575fe946d21ee86959c6"
         };
 
-        const playersY = ["Víctor", "Guillermo", "Mikel", "Hadi", "Michele", "David"];
-        const playersO = ["Aureli", "Ayoub II", "Gabriel", "Vila", "Robert", "Mike"];
+        // Jugadores actualizados
+        const playersY = ["Sergi", "Hadi", "Albert", "Luis", "Joan", "Jordi"];
+        const playersO = ["Mikel", "Guillermo", "Xavi", "Mike", "Giacomo", "Paco"];
         const PIN_SECRET = "1234";
 
         let db, matchDoc;
@@ -135,7 +136,8 @@
             let ord = [...list];
             for(let i=0; i<rot; i++) ord.unshift(ord.pop());
             el.innerHTML = ord.map((name, i) => {
-                let role = i===2 ? '🧤' : (i===5 ? '💤' : '🏃');
+                // Roles basados en el nuevo orden (2: portero, 5: banca/rotación)
+                let role = i===2 ? '🧤' : (i===5 ? '🪑' : (i===0 ? '⬇️' : '🏃'));
                 let bg = i===5 ? 'bg-slate-50 opacity-40 grayscale' : 'bg-white shadow-sm';
                 if(i===2) bg = color === 'yellow' ? 'bg-yellow-50 border-yellow-200' : 'bg-orange-50 border-orange-200';
                 return `<div class="p-3 rounded-xl border border-slate-100 ${bg} flex items-center justify-between text-[11px] font-bold text-slate-700"><span>${name}</span><span>${role}</span></div>`;
@@ -148,27 +150,21 @@
                 db = getFirestore(app);
                 const auth = getAuth(app);
 
-                // Escuchar estado de autenticación
                 onAuthStateChanged(auth, (user) => {
                     if (user) {
-                        console.log("Autenticado como:", user.uid);
                         initSync();
                     } else {
-                        // Si no hay usuario, intentar login anónimo
                         signInAnonymously(auth).catch(err => {
-                            console.error("Auth Error:", err.message);
                             if (err.code === 'auth/configuration-not-found') {
                                 document.getElementById('status-text').innerText = "Error: Activar Auth Anónimo en Consola";
                                 document.getElementById('status-dot').className = "w-2 h-2 rounded-full bg-orange-500";
                             }
-                            // Intentar sincronizar incluso si falla el auth (por si las reglas de firestore son públicas)
                             initSync();
                         });
                     }
                 });
 
             } catch (e) {
-                console.error("Error inicialización:", e);
                 document.getElementById('status-text').innerText = "Error Config";
             }
         };
@@ -196,7 +192,6 @@
                     setDoc(matchDoc, state).catch(e => console.error("Error creando doc:", e));
                 }
             }, (error) => {
-                console.error("Firestore Error:", error);
                 document.getElementById('status-text').innerText = "Error Permisos Firestore";
                 document.getElementById('status-dot').className = "w-2 h-2 rounded-full bg-red-500";
             });
