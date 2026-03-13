@@ -13,6 +13,8 @@
         body.is-admin .admin-only { display: flex; }
         body.is-admin .viewer-only { display: none; }
         .score-font { font-variant-numeric: tabular-nums; }
+        .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; }
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 1rem; }
     </style>
 </head>
 <body class="min-h-screen pb-32">
@@ -33,6 +35,24 @@
 
     <main class="max-w-md mx-auto p-4 space-y-4">
         
+        <!-- Sección de Video (Nueva) -->
+        <div class="bg-slate-800 rounded-[2rem] overflow-hidden shadow-lg border border-slate-700">
+            <button onclick="document.getElementById('video-box').classList.toggle('hidden')" class="w-full p-4 flex justify-between items-center text-white">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="tv" class="w-4 h-4 text-red-500"></i>
+                    <span class="text-[10px] font-black uppercase tracking-widest">Streaming Directo</span>
+                </div>
+                <i data-lucide="chevron-down" class="w-4 h-4"></i>
+            </button>
+            <div id="video-box" class="p-4 pt-0 hidden">
+                <div class="video-container bg-black rounded-xl flex items-center justify-center">
+                    <!-- Ejemplo con un placeholder de YouTube. Cambia ID_VIDEO por el tuyo -->
+                    <iframe src="https://www.youtube.com/embed/live_stream?channel=UC_ID_DE_TU_CANAL" frameborder="0" allowfullscreen></iframe>
+                </div>
+                <p class="text-[9px] text-slate-400 mt-2 text-center">Configura el ID de tu canal en el código</p>
+            </div>
+        </div>
+
         <!-- Marcador Principal -->
         <div class="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-200">
             <div class="flex justify-between items-center text-center">
@@ -40,8 +60,8 @@
                     <p class="text-[10px] font-black text-yellow-600 uppercase tracking-widest mb-1">Amarillo</p>
                     <div class="text-7xl font-black score-font tracking-tighter" id="score-y">0</div>
                     <div class="admin-only justify-center gap-2 mt-4">
-                        <button onclick="updateScore('y', -1)" class="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 text-2xl font-bold border border-slate-200 active:scale-95 transition-transform">-</button>
-                        <button onclick="updateScore('y', 1)" class="w-12 h-12 rounded-2xl bg-yellow-400 flex items-center justify-center text-yellow-900 text-2xl font-bold shadow-md border border-yellow-500 active:scale-95 transition-transform">+</button>
+                        <button onclick="updateScore('y', -1)" class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 text-xl font-bold border border-slate-200 active:scale-95 transition-transform">-</button>
+                        <button onclick="updateScore('y', 1)" class="w-10 h-10 rounded-xl bg-yellow-400 flex items-center justify-center text-yellow-900 text-xl font-bold shadow-md border border-yellow-500 active:scale-95 transition-transform">+</button>
                     </div>
                 </div>
                 <div class="font-black text-slate-100 italic mx-4 text-3xl">VS</div>
@@ -49,28 +69,29 @@
                     <p class="text-[10px] font-black text-orange-600 uppercase tracking-widest mb-1">Naranja</p>
                     <div class="text-7xl font-black score-font tracking-tighter" id="score-o">0</div>
                     <div class="admin-only justify-center gap-2 mt-4">
-                        <button onclick="updateScore('o', -1)" class="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 text-2xl font-bold border border-slate-200 active:scale-95 transition-transform">-</button>
-                        <button onclick="updateScore('o', 1)" class="w-12 h-12 rounded-2xl bg-orange-500 flex items-center justify-center text-white text-2xl font-bold shadow-md border border-orange-600 active:scale-95 transition-transform">+</button>
+                        <button onclick="updateScore('o', -1)" class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 text-xl font-bold border border-slate-200 active:scale-95 transition-transform">-</button>
+                        <button onclick="updateScore('o', 1)" class="w-10 h-10 rounded-xl bg-orange-500 flex items-center justify-center text-white text-xl font-bold shadow-md border border-orange-600 active:scale-95 transition-transform">+</button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Tiempo -->
+        <!-- Tiempo y Aviso -->
         <div class="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-200 flex flex-col items-center">
-            <div id="timer" class="text-7xl font-black text-slate-800 score-font tracking-tighter mb-6">00:00</div>
+            <div id="timer" class="text-7xl font-black text-slate-800 score-font tracking-tighter mb-2">00:00</div>
+            <div id="timer-alert" class="h-6 text-red-500 font-black text-[10px] uppercase tracking-widest animate-pulse hidden">¡Cambio de Jugadores!</div>
             
-            <div class="admin-only w-full gap-3">
-                <button id="btn-play" onclick="toggleClock()" class="flex-1 h-16 bg-indigo-600 text-white rounded-2xl font-black uppercase text-sm tracking-widest shadow-lg flex items-center justify-center gap-3">
+            <div class="admin-only w-full gap-3 mt-4">
+                <button id="btn-play" onclick="toggleClock()" class="flex-1 h-14 bg-indigo-600 text-white rounded-2xl font-black uppercase text-sm tracking-widest shadow-lg flex items-center justify-center gap-3">
                     <i data-lucide="play" class="w-5 h-5 fill-current"></i> Iniciar
                 </button>
-                <button onclick="resetMatch()" class="w-16 h-16 bg-slate-100 text-slate-400 rounded-2xl flex items-center justify-center border border-slate-200">
+                <button onclick="resetMatch()" class="w-14 h-14 bg-slate-100 text-slate-400 rounded-2xl flex items-center justify-center border border-slate-200">
                     <i data-lucide="rotate-ccw" class="w-6 h-6"></i>
                 </button>
             </div>
             
             <div class="viewer-only py-3 px-8 bg-slate-50 rounded-2xl border border-slate-100 text-[10px] font-black text-slate-400 uppercase tracking-widest italic flex items-center gap-2">
-                <i data-lucide="rss" class="w-3 h-3 text-green-500"></i> Sincronizado en tiempo real
+                <i data-lucide="bell" class="w-3 h-3 text-indigo-500"></i> Auto-pausa cada 5 min
             </div>
         </div>
 
@@ -111,21 +132,38 @@
             appId: "1:690933795763:web:55575fe946d21ee86959c6"
         };
 
-        // Jugadores actualizados
         const playersY = ["Sergi", "Hadi", "Albert", "Luis", "Joan", "Jordi"];
         const playersO = ["Mikel", "Guillermo", "Xavi", "Mike", "Giacomo", "Paco"];
         const PIN_SECRET = "1234";
+        const CHANGE_INTERVAL = 300; // 5 minutos en segundos
 
         let db, matchDoc;
         let state = { scoreY: 0, scoreO: 0, seconds: 0, running: false, lastUpd: Date.now() };
         let localSecs = 0;
         let clockInterval = null;
 
+        // Contexto de audio para el pitido
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playBeep() {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.type = "sine";
+            osc.frequency.value = 880;
+            gain.gain.setValueAtTime(0, audioCtx.currentTime);
+            gain.gain.linearRampToValueAtTime(1, audioCtx.currentTime + 0.01);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 1);
+        }
+
         const render = (s) => {
             const m = Math.floor(s / 60).toString().padStart(2, '0');
             const sc = (s % 60).toString().padStart(2, '0');
             document.getElementById('timer').innerText = `${m}:${sc}`;
-            const rotations = Math.floor(s / 300);
+            
+            const rotations = Math.floor(s / CHANGE_INTERVAL);
             drawTeam('list-y', playersY, rotations, 'yellow');
             drawTeam('list-o', playersO, rotations, 'orange');
             lucide.createIcons();
@@ -136,7 +174,6 @@
             let ord = [...list];
             for(let i=0; i<rot; i++) ord.unshift(ord.pop());
             el.innerHTML = ord.map((name, i) => {
-                // Roles basados en el nuevo orden (2: portero, 5: banca/rotación)
                 let role = i===2 ? '🧤' : (i===5 ? '🪑' : (i===0 ? '⬇️' : '🏃'));
                 let bg = i===5 ? 'bg-slate-50 opacity-40 grayscale' : 'bg-white shadow-sm';
                 if(i===2) bg = color === 'yellow' ? 'bg-yellow-50 border-yellow-200' : 'bg-orange-50 border-orange-200';
@@ -149,32 +186,20 @@
                 const app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
                 const auth = getAuth(app);
-
                 onAuthStateChanged(auth, (user) => {
-                    if (user) {
-                        initSync();
-                    } else {
-                        signInAnonymously(auth).catch(err => {
-                            if (err.code === 'auth/configuration-not-found') {
-                                document.getElementById('status-text').innerText = "Error: Activar Auth Anónimo en Consola";
-                                document.getElementById('status-dot').className = "w-2 h-2 rounded-full bg-orange-500";
-                            }
-                            initSync();
-                        });
-                    }
+                    if (user) initSync();
+                    else signInAnonymously(auth).catch(() => initSync());
                 });
-
-            } catch (e) {
-                document.getElementById('status-text').innerText = "Error Config";
-            }
+            } catch (e) { document.getElementById('status-text').innerText = "Error Config"; }
         };
 
         const initSync = () => {
             matchDoc = doc(db, 'matches', 'final-rambleta');
-
             onSnapshot(matchDoc, (snap) => {
                 if (snap.exists()) {
-                    state = snap.data();
+                    const data = snap.data();
+                    const wasRunning = state.running;
+                    state = data;
                     document.getElementById('score-y').innerText = state.scoreY;
                     document.getElementById('score-o').innerText = state.scoreO;
                     
@@ -188,12 +213,7 @@
                     }
                     document.getElementById('status-dot').className = "w-2 h-2 rounded-full bg-green-500 animate-pulse";
                     document.getElementById('status-text').innerText = "Sincronizado";
-                } else {
-                    setDoc(matchDoc, state).catch(e => console.error("Error creando doc:", e));
-                }
-            }, (error) => {
-                document.getElementById('status-text').innerText = "Error Permisos Firestore";
-                document.getElementById('status-dot').className = "w-2 h-2 rounded-full bg-red-500";
+                } else { setDoc(matchDoc, state); }
             });
         };
 
@@ -202,39 +222,31 @@
                 document.body.classList.add('is-admin');
                 document.getElementById('login-container').innerHTML = `<p class="text-center w-full font-black text-indigo-600 text-[10px] uppercase tracking-widest">✅ Modo Administrador</p>`;
                 document.getElementById('admin-badge').classList.remove('hidden');
-            } else {
-                alert("PIN incorrecto (1234)");
-            }
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+            } else alert("PIN incorrecto (1234)");
         };
 
         window.updateScore = async (t, v) => {
             const key = t === 'y' ? 'scoreY' : 'scoreO';
-            const newVal = Math.max(0, state[key] + v);
-            if(matchDoc) {
-                try {
-                    await updateDoc(matchDoc, { [key]: newVal });
-                } catch(e) { console.error("Update error:", e); }
-            }
+            if(matchDoc) await updateDoc(matchDoc, { [key]: Math.max(0, state[key] + v) });
         };
 
         window.toggleClock = async () => {
             if(matchDoc) {
-                try {
-                    await updateDoc(matchDoc, {
-                        running: !state.running,
-                        seconds: localSecs,
-                        lastUpd: Date.now()
-                    });
-                } catch(e) { console.error("Toggle error:", e); }
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                document.getElementById('timer-alert').classList.add('hidden');
+                await updateDoc(matchDoc, {
+                    running: !state.running,
+                    seconds: localSecs,
+                    lastUpd: Date.now()
+                });
             }
         };
 
         window.resetMatch = async () => {
-            if(!confirm("¿Resetear marcador y tiempo?")) return;
-            if(matchDoc) {
-                try {
-                    await setDoc(matchDoc, { scoreY: 0, scoreO: 0, seconds: 0, running: false, lastUpd: Date.now() });
-                } catch(e) { console.error("Reset error:", e); }
+            if(confirm("¿Resetear marcador y tiempo?")) {
+                await setDoc(matchDoc, { scoreY: 0, scoreO: 0, seconds: 0, running: false, lastUpd: Date.now() });
+                document.getElementById('timer-alert').classList.add('hidden');
             }
         };
 
@@ -245,7 +257,19 @@
                 b.classList.replace('bg-indigo-600', 'bg-red-500');
             }
             if(clockInterval) clearInterval(clockInterval);
-            clockInterval = setInterval(() => { localSecs++; render(localSecs); }, 1000);
+            clockInterval = setInterval(() => { 
+                localSecs++; 
+                render(localSecs); 
+                
+                // Lógica de auto-pausa cada 5 min (300s)
+                if (localSecs > 0 && localSecs % CHANGE_INTERVAL === 0) {
+                    playBeep();
+                    if (document.body.classList.contains('is-admin')) {
+                        toggleClock(); // Pausa automática en Firebase
+                        document.getElementById('timer-alert').classList.remove('hidden');
+                    }
+                }
+            }, 1000);
             lucide.createIcons();
         }
 
