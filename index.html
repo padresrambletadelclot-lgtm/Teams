@@ -9,73 +9,72 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; -webkit-tap-highlight-color: transparent; }
-        .admin-ui { display: none; }
-        body.is-admin .admin-ui { display: flex; }
-        body.is-admin .viewer-ui { display: none; }
-        .score-num { font-feature-settings: "tnum"; }
+        .admin-only { display: none; }
+        body.is-admin .admin-only { display: flex; }
+        body.is-admin .viewer-only { display: none; }
+        .score-font { font-variant-numeric: tabular-nums; }
     </style>
 </head>
 <body class="min-h-screen pb-32">
 
-    <!-- Navbar Status -->
-    <nav class="bg-slate-900 text-white p-4 sticky top-0 z-50 border-b border-slate-800 shadow-lg">
+    <!-- Navbar -->
+    <nav class="bg-slate-900 text-white p-4 sticky top-0 z-50 border-b border-slate-800 shadow-xl">
         <div class="max-w-md mx-auto flex justify-between items-center">
             <div>
-                <h1 class="text-xl font-black italic text-yellow-400 tracking-tighter">RAMBLETA CHAMP</h1>
-                <div id="conn-status" class="flex items-center gap-1.5 opacity-80">
+                <h1 class="text-xl font-black italic text-yellow-400 tracking-tighter">RAMBLETA LIVE</h1>
+                <div id="status" class="flex items-center gap-1.5">
                     <div id="status-dot" class="w-2 h-2 rounded-full bg-red-500"></div>
                     <span id="status-text" class="text-[9px] font-bold uppercase tracking-widest text-slate-400">Conectando...</span>
                 </div>
             </div>
-            <div id="admin-indicator" class="hidden bg-yellow-500 text-slate-950 text-[9px] font-black px-2 py-1 rounded uppercase animate-pulse">ADMIN</div>
+            <div id="admin-badge" class="hidden bg-yellow-500 text-slate-900 text-[9px] font-black px-2 py-1 rounded uppercase">Admin</div>
         </div>
     </nav>
 
     <main class="max-w-md mx-auto p-4 space-y-4">
         
-        <!-- Marcador Central -->
-        <div class="bg-white rounded-[2.5rem] p-8 shadow-xl border border-slate-200/50">
+        <!-- Marcador Principal -->
+        <div class="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-200">
             <div class="flex justify-between items-center text-center">
                 <div class="flex-1">
                     <p class="text-[10px] font-black text-yellow-600 uppercase tracking-widest mb-1">Amarillo</p>
-                    <div class="text-7xl font-black score-num tracking-tighter" id="score-y">0</div>
-                    <div class="admin-ui justify-center gap-2 mt-4">
-                        <button onclick="updateScore('y', -1)" class="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 text-2xl font-bold border border-slate-200 active:scale-90 transition-transform">-</button>
-                        <button onclick="updateScore('y', 1)" class="w-12 h-12 rounded-2xl bg-yellow-400 flex items-center justify-center text-yellow-900 text-2xl font-bold shadow-md border border-yellow-500 active:scale-90 transition-transform">+</button>
+                    <div class="text-7xl font-black score-font tracking-tighter" id="score-y">0</div>
+                    <div class="admin-only justify-center gap-2 mt-4">
+                        <button onclick="updateScore('y', -1)" class="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 text-2xl font-bold border border-slate-200 active:scale-95 transition-transform">-</button>
+                        <button onclick="updateScore('y', 1)" class="w-12 h-12 rounded-2xl bg-yellow-400 flex items-center justify-center text-yellow-900 text-2xl font-bold shadow-md border border-yellow-500 active:scale-95 transition-transform">+</button>
                     </div>
                 </div>
                 <div class="font-black text-slate-100 italic mx-4 text-3xl">VS</div>
                 <div class="flex-1">
                     <p class="text-[10px] font-black text-orange-600 uppercase tracking-widest mb-1">Naranja</p>
-                    <div class="text-7xl font-black score-num tracking-tighter" id="score-o">0</div>
-                    <div class="admin-ui justify-center gap-2 mt-4">
-                        <button onclick="updateScore('o', -1)" class="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 text-2xl font-bold border border-slate-200 active:scale-90 transition-transform">-</button>
-                        <button onclick="updateScore('o', 1)" class="w-12 h-12 rounded-2xl bg-orange-500 flex items-center justify-center text-white text-2xl font-bold shadow-md border border-orange-600 active:scale-90 transition-transform">+</button>
+                    <div class="text-7xl font-black score-font tracking-tighter" id="score-o">0</div>
+                    <div class="admin-only justify-center gap-2 mt-4">
+                        <button onclick="updateScore('o', -1)" class="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 text-2xl font-bold border border-slate-200 active:scale-95 transition-transform">-</button>
+                        <button onclick="updateScore('o', 1)" class="w-12 h-12 rounded-2xl bg-orange-500 flex items-center justify-center text-white text-2xl font-bold shadow-md border border-orange-600 active:scale-95 transition-transform">+</button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Tiempo de Juego -->
-        <div class="bg-white rounded-[2.5rem] p-8 shadow-xl border border-slate-200/50 flex flex-col items-center">
-            <div id="timer-display" class="text-7xl font-black text-slate-800 score-num tracking-tighter mb-6">00:00</div>
+        <!-- Tiempo -->
+        <div class="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-200 flex flex-col items-center">
+            <div id="timer" class="text-7xl font-black text-slate-800 score-font tracking-tighter mb-6">00:00</div>
             
-            <div class="admin-ui w-full gap-3">
-                <button id="ctrl-btn" onclick="toggleClock()" class="flex-1 h-16 bg-indigo-600 text-white rounded-2xl font-black uppercase text-sm tracking-widest shadow-lg flex items-center justify-center gap-3 active:scale-95 transition-all">
-                    <i data-lucide="play" class="w-6 h-6 fill-current"></i> <span>Iniciar</span>
+            <div class="admin-only w-full gap-3">
+                <button id="btn-play" onclick="toggleClock()" class="flex-1 h-16 bg-indigo-600 text-white rounded-2xl font-black uppercase text-sm tracking-widest shadow-lg flex items-center justify-center gap-3">
+                    <i data-lucide="play" class="w-5 h-5 fill-current"></i> Iniciar
                 </button>
-                <button onclick="resetMatch()" class="w-16 h-16 bg-slate-100 text-slate-400 rounded-2xl flex items-center justify-center border border-slate-200 active:bg-red-50 active:text-red-500 transition-colors">
+                <button onclick="resetMatch()" class="w-16 h-16 bg-slate-100 text-slate-400 rounded-2xl flex items-center justify-center border border-slate-200">
                     <i data-lucide="rotate-ccw" class="w-6 h-6"></i>
                 </button>
             </div>
             
-            <div class="viewer-ui py-3 px-8 bg-slate-50 rounded-2xl border border-slate-100 text-[10px] font-black text-slate-400 uppercase tracking-widest italic flex items-center gap-2">
-                <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                Sincronizado en Tiempo Real
+            <div class="viewer-only py-3 px-8 bg-slate-50 rounded-2xl border border-slate-100 text-[10px] font-black text-slate-400 uppercase tracking-widest italic flex items-center gap-2">
+                <i data-lucide="rss" class="w-3 h-3 text-green-500"></i> Sincronizado en tiempo real
             </div>
         </div>
 
-        <!-- Equipos y Jugadores -->
+        <!-- Jugadores -->
         <div class="grid grid-cols-2 gap-4">
             <div class="space-y-3">
                 <h3 class="text-[10px] font-black uppercase text-yellow-600 pl-2">Equipo Amarillo</h3>
@@ -88,201 +87,186 @@
         </div>
     </main>
 
-    <!-- Admin Panel Floating -->
-    <div class="fixed bottom-0 inset-x-0 p-4 bg-white/95 backdrop-blur-md border-t border-slate-200 z-50 shadow-2xl">
-        <div class="max-w-md mx-auto" id="login-form">
+    <!-- Admin Panel -->
+    <div class="fixed bottom-0 inset-x-0 p-4 bg-white/95 backdrop-blur-md border-t border-slate-200 z-50">
+        <div class="max-w-md mx-auto" id="login-container">
             <div class="flex gap-2 items-center">
-                <input type="password" id="pin" placeholder="PIN ADMIN" class="flex-1 h-12 bg-slate-100 border-none rounded-xl px-4 text-center font-bold tracking-[0.5em] focus:ring-2 focus:ring-yellow-500 outline-none transition-all">
-                <button onclick="tryAdmin()" class="h-12 px-6 bg-slate-900 text-white rounded-xl font-black text-xs uppercase tracking-widest active:scale-95">Entrar</button>
+                <input type="password" id="pin-input" placeholder="PIN Administrador" class="flex-1 h-12 bg-slate-100 border-none rounded-xl px-4 text-center font-bold tracking-[0.5em] focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                <button onclick="tryLogin()" class="h-12 px-6 bg-slate-900 text-white rounded-xl font-black text-xs uppercase tracking-widest active:scale-95 transition-transform">Entrar</button>
             </div>
-            <p class="text-[8px] text-center text-slate-400 mt-2 font-bold uppercase tracking-widest">PIN por defecto: 1234</p>
-        </div>
-        <div id="admin-msg" class="hidden max-w-md mx-auto py-2 text-center text-indigo-600 font-black text-[10px] uppercase tracking-widest">
-            Control de Partido Activo
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getFirestore, doc, onSnapshot, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
-        // CONFIGURACIÓN DE JUGADORES
-        const teamY = ["Víctor", "Guillermo", "Mikel", "Hadi", "Michele", "David"];
-        const teamO = ["Aureli", "Ayoub II", "Gabriel", "Vila", "Robert", "Mike"];
-        const PIN_CORRECTO = "1234";
-
-        // VARIABLES DE ESTADO LOCAL
-        let matchState = { scoreY: 0, scoreO: 0, seconds: 0, isRunning: false, lastUpdate: Date.now() };
-        let localTime = 0;
-        let clockRef = null;
-        let db = null;
-        let matchDoc = null;
-
-        // INICIALIZACIÓN DE FIREBASE (USANDO VARIABLES DE ENTORNO)
-        const init = async () => {
-            try {
-                // Verificar si las credenciales están presentes en el entorno
-                if (typeof __firebase_config === 'undefined') {
-                    throw new Error("No hay configuración de Firebase disponible en el entorno.");
-                }
-
-                const config = JSON.parse(__firebase_config);
-                const appId = typeof __app_id !== 'undefined' ? __app_id : 'rambleta-champ';
-                
-                const app = initializeApp(config);
-                db = getFirestore(app);
-                const auth = getAuth(app);
-
-                // Autenticación requerida por la plataforma
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
-
-                // Ruta estricta de la plataforma (Regla 1)
-                matchDoc = doc(db, 'artifacts', appId, 'public', 'data', 'match_v1');
-
-                // Listener en tiempo real
-                onSnapshot(matchDoc, (snap) => {
-                    if (snap.exists()) {
-                        matchState = snap.data();
-                        syncUI();
-                    } else {
-                        setDoc(matchDoc, matchState);
-                    }
-                    updateStatus(true);
-                }, (err) => {
-                    console.error("Fallo de sincronización:", err);
-                    updateStatus(false);
-                });
-
-            } catch (e) {
-                console.warn("Ejecutando en modo local (sin persistencia):", e.message);
-                updateStatus(false);
-                render(0); // Dibujar jugadores iniciales
-            }
+        const firebaseConfig = {
+            apiKey: "AIzaSyCo7qB8-8GSrBbWevoNQsufTmnlto2vZoU",
+            authDomain: "teams-13d3b.firebaseapp.com",
+            projectId: "teams-13d3b",
+            storageBucket: "teams-13d3b.firebasestorage.app",
+            messagingSenderId: "690933795763",
+            appId: "1:690933795763:web:55575fe946d21ee86959c6"
         };
 
-        const syncUI = () => {
-            document.getElementById('score-y').innerText = matchState.scoreY;
-            document.getElementById('score-o').innerText = matchState.scoreO;
-            
-            if (matchState.isRunning) {
-                const now = Date.now();
-                const diff = Math.floor((now - matchState.lastUpdate) / 1000);
-                localTime = matchState.seconds + diff;
-                if (!clockRef) startVisualClock();
-            } else {
-                localTime = matchState.seconds;
-                stopVisualClock();
-                render(localTime);
-            }
-        };
+        const playersY = ["Víctor", "Guillermo", "Mikel", "Hadi", "Michele", "David"];
+        const playersO = ["Aureli", "Ayoub II", "Gabriel", "Vila", "Robert", "Mike"];
+        const PIN_SECRET = "1234";
 
-        const render = (totalSecs) => {
-            const m = Math.floor(totalSecs / 60).toString().padStart(2, '0');
-            const s = (totalSecs % 60).toString().padStart(2, '0');
-            document.getElementById('timer-display').innerText = `${m}:${s}`;
-            
-            const rotations = Math.floor(totalSecs / 300); // Cada 5 minutos
-            drawList('list-y', teamY, rotations, 'yellow');
-            drawList('list-o', teamO, rotations, 'orange');
+        let db, matchDoc;
+        let state = { scoreY: 0, scoreO: 0, seconds: 0, running: false, lastUpd: Date.now() };
+        let localSecs = 0;
+        let clockInterval = null;
+
+        const render = (s) => {
+            const m = Math.floor(s / 60).toString().padStart(2, '0');
+            const sc = (s % 60).toString().padStart(2, '0');
+            document.getElementById('timer').innerText = `${m}:${sc}`;
+            const rotations = Math.floor(s / 300);
+            drawTeam('list-y', playersY, rotations, 'yellow');
+            drawTeam('list-o', playersO, rotations, 'orange');
             lucide.createIcons();
         };
 
-        const drawList = (id, names, rot, color) => {
+        const drawTeam = (id, list, rot, color) => {
             const el = document.getElementById(id);
-            let players = [...names];
-            for(let i=0; i<rot; i++) players.unshift(players.pop());
-            
-            el.innerHTML = players.map((name, i) => {
-                let icon = i===2 ? 'shield' : (i===5 ? 'coffee' : 'user');
-                let role = i===2 ? 'Portero' : (i===5 ? 'Banquillo' : 'Campo');
+            let ord = [...list];
+            for(let i=0; i<rot; i++) ord.unshift(ord.pop());
+            el.innerHTML = ord.map((name, i) => {
+                let role = i===2 ? '🧤' : (i===5 ? '💤' : '🏃');
                 let bg = i===5 ? 'bg-slate-50 opacity-40 grayscale' : 'bg-white shadow-sm';
-                if(i===2) bg = color === 'yellow' ? 'bg-yellow-50 border-yellow-200 ring-2 ring-yellow-400/10' : 'bg-orange-50 border-orange-200 ring-2 ring-orange-500/10';
-                
-                return `
-                <div class="p-3 rounded-2xl border border-slate-100 ${bg} flex items-center justify-between text-[11px] font-bold text-slate-700">
-                    <div class="flex items-center gap-2">
-                        <i data-lucide="${icon}" class="w-3.5 h-3.5"></i>
-                        <span class="truncate">${name}</span>
-                    </div>
-                    <span class="text-[8px] uppercase tracking-tighter opacity-50">${role}</span>
-                </div>`;
+                if(i===2) bg = color === 'yellow' ? 'bg-yellow-50 border-yellow-200' : 'bg-orange-50 border-orange-200';
+                return `<div class="p-3 rounded-xl border border-slate-100 ${bg} flex items-center justify-between text-[11px] font-bold text-slate-700"><span>${name}</span><span>${role}</span></div>`;
             }).join('');
         };
 
-        // --- ACCIONES DEL ADMINISTRADOR ---
-        window.tryAdmin = () => {
-            const val = document.getElementById('pin').value;
-            if (val === PIN_CORRECTO) {
-                document.body.classList.add('is-admin');
-                document.getElementById('admin-indicator').classList.remove('hidden');
-                document.getElementById('login-form').classList.add('hidden');
-                document.getElementById('admin-msg').classList.remove('hidden');
-            } else {
-                alert("PIN Incorrecto (Pista: 1234)");
+        const connect = async () => {
+            try {
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                const auth = getAuth(app);
+
+                // Escuchar estado de autenticación
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        console.log("Autenticado como:", user.uid);
+                        initSync();
+                    } else {
+                        // Si no hay usuario, intentar login anónimo
+                        signInAnonymously(auth).catch(err => {
+                            console.error("Auth Error:", err.message);
+                            if (err.code === 'auth/configuration-not-found') {
+                                document.getElementById('status-text').innerText = "Error: Activar Auth Anónimo en Consola";
+                                document.getElementById('status-dot').className = "w-2 h-2 rounded-full bg-orange-500";
+                            }
+                            // Intentar sincronizar incluso si falla el auth (por si las reglas de firestore son públicas)
+                            initSync();
+                        });
+                    }
+                });
+
+            } catch (e) {
+                console.error("Error inicialización:", e);
+                document.getElementById('status-text').innerText = "Error Config";
             }
         };
 
-        window.updateScore = async (team, val) => {
-            const key = team === 'y' ? 'scoreY' : 'scoreO';
-            const newVal = Math.max(0, matchState[key] + val);
-            if (matchDoc) await updateDoc(matchDoc, { [key]: newVal });
+        const initSync = () => {
+            matchDoc = doc(db, 'matches', 'final-rambleta');
+
+            onSnapshot(matchDoc, (snap) => {
+                if (snap.exists()) {
+                    state = snap.data();
+                    document.getElementById('score-y').innerText = state.scoreY;
+                    document.getElementById('score-o').innerText = state.scoreO;
+                    
+                    if (state.running) {
+                        localSecs = state.seconds + Math.floor((Date.now() - state.lastUpd) / 1000);
+                        if (!clockInterval) startTimer();
+                    } else {
+                        localSecs = state.seconds;
+                        stopTimer();
+                        render(localSecs);
+                    }
+                    document.getElementById('status-dot').className = "w-2 h-2 rounded-full bg-green-500 animate-pulse";
+                    document.getElementById('status-text').innerText = "Sincronizado";
+                } else {
+                    setDoc(matchDoc, state).catch(e => console.error("Error creando doc:", e));
+                }
+            }, (error) => {
+                console.error("Firestore Error:", error);
+                document.getElementById('status-text').innerText = "Error Permisos Firestore";
+                document.getElementById('status-dot').className = "w-2 h-2 rounded-full bg-red-500";
+            });
+        };
+
+        window.tryLogin = () => {
+            if (document.getElementById('pin-input').value === PIN_SECRET) {
+                document.body.classList.add('is-admin');
+                document.getElementById('login-container').innerHTML = `<p class="text-center w-full font-black text-indigo-600 text-[10px] uppercase tracking-widest">✅ Modo Administrador</p>`;
+                document.getElementById('admin-badge').classList.remove('hidden');
+            } else {
+                alert("PIN incorrecto (1234)");
+            }
+        };
+
+        window.updateScore = async (t, v) => {
+            const key = t === 'y' ? 'scoreY' : 'scoreO';
+            const newVal = Math.max(0, state[key] + v);
+            if(matchDoc) {
+                try {
+                    await updateDoc(matchDoc, { [key]: newVal });
+                } catch(e) { console.error("Update error:", e); }
+            }
         };
 
         window.toggleClock = async () => {
-            const newState = !matchState.isRunning;
-            if (matchDoc) {
-                await updateDoc(matchDoc, {
-                    isRunning: newState,
-                    seconds: localTime,
-                    lastUpdate: Date.now()
-                });
+            if(matchDoc) {
+                try {
+                    await updateDoc(matchDoc, {
+                        running: !state.running,
+                        seconds: localSecs,
+                        lastUpd: Date.now()
+                    });
+                } catch(e) { console.error("Toggle error:", e); }
             }
         };
 
         window.resetMatch = async () => {
-            if(!confirm("¿Reiniciar partido?")) return;
-            if (matchDoc) {
-                await setDoc(matchDoc, { scoreY: 0, scoreO: 0, seconds: 0, isRunning: false, lastUpdate: Date.now() });
+            if(!confirm("¿Resetear marcador y tiempo?")) return;
+            if(matchDoc) {
+                try {
+                    await setDoc(matchDoc, { scoreY: 0, scoreO: 0, seconds: 0, running: false, lastUpd: Date.now() });
+                } catch(e) { console.error("Reset error:", e); }
             }
         };
 
-        function startVisualClock() {
-            const btn = document.getElementById('ctrl-btn');
-            if(btn) {
-                btn.classList.replace('bg-indigo-600', 'bg-red-500');
-                btn.innerHTML = '<i data-lucide="pause" class="w-6 h-6 fill-current"></i> <span>Pausar</span>';
+        function startTimer() {
+            const b = document.getElementById('btn-play');
+            if(b) {
+                b.innerHTML = '<i data-lucide="pause" class="w-5 h-5 fill-current"></i> Pausar';
+                b.classList.replace('bg-indigo-600', 'bg-red-500');
             }
-            if(clockRef) clearInterval(clockRef);
-            clockRef = setInterval(() => { localTime++; render(localTime); }, 1000);
+            if(clockInterval) clearInterval(clockInterval);
+            clockInterval = setInterval(() => { localSecs++; render(localSecs); }, 1000);
             lucide.createIcons();
         }
 
-        function stopVisualClock() {
-            const btn = document.getElementById('ctrl-btn');
-            if(btn) {
-                btn.classList.replace('bg-red-500', 'bg-indigo-600');
-                btn.innerHTML = '<i data-lucide="play" class="w-6 h-6 fill-current"></i> <span>Reanudar</span>';
+        function stopTimer() {
+            const b = document.getElementById('btn-play');
+            if(b) {
+                b.innerHTML = '<i data-lucide="play" class="w-5 h-5 fill-current"></i> Iniciar';
+                b.classList.replace('bg-red-500', 'bg-indigo-600');
             }
-            if(clockRef) clearInterval(clockRef);
-            clockRef = null;
+            if(clockInterval) clearInterval(clockInterval);
+            clockInterval = null;
             lucide.createIcons();
         }
 
-        function updateStatus(online) {
-            const dot = document.getElementById('status-dot');
-            const txt = document.getElementById('status-text');
-            dot.className = online ? "w-2 h-2 rounded-full bg-green-500" : "w-2 h-2 rounded-full bg-red-500";
-            txt.innerText = online ? "Sincronizado" : "Modo Local";
-            txt.className = `text-[9px] font-bold uppercase tracking-widest ${online ? 'text-green-500' : 'text-slate-400'}`;
-        }
-
-        // INICIO
-        init();
+        render(0);
+        connect();
     </script>
 </body>
 </html>
