@@ -11,7 +11,6 @@
         body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; -webkit-tap-highlight-color: transparent; }
         .admin-only { display: none; }
         body.is-admin .admin-only { display: flex; }
-        body.is-admin .viewer-only { display: none; }
         .score-font { font-variant-numeric: tabular-nums; }
         .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; background: #000; border-radius: 1rem; }
         .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
@@ -51,11 +50,13 @@
             </button>
             <div id="video-box" class="p-4 pt-0 hidden">
                 <div class="video-container" id="twitch-container">
-                    <!-- El iframe se cargará aquí al pulsar el botón -->
+                    <!-- El JavaScript inyectará el iframe aquí usando el canal PadresRambletaDelClot -->
+                    <div class="absolute inset-0 flex items-center justify-center text-slate-500 text-xs font-bold uppercase tracking-widest">
+                        Cargando stream...
+                    </div>
                 </div>
             </div>
         </div>
-
 
         <!-- Marcador Principal -->
         <div class="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-200" id="main-scoreboard">
@@ -136,7 +137,7 @@
             appId: "1:690933795763:web:55575fe946d21ee86959c6"
         };
 
-        const playersY = ["Albert g", "Sergi", "Xavi", "Giacomo", "Mike R", "Jordi"];
+        const playersY = ["Michele", "Joan", "Mike R", "Pako", "Jordi", "Gabri"];
         const playersO = ["Mikel", "Guillermo", "Hadi Tembo", "Luis", "Joan", "Paco"];
         const PIN_SECRET = "1234";
         const CHANGE_INTERVAL = 300; 
@@ -146,24 +147,32 @@
         let localSecs = 0;
         let clockInterval = null;
 
-        // Función configurada específicamente para el canal y el dominio vercel
+        // Esta función maneja la carga del vídeo cuando se pulsa el botón
         window.toggleVideo = () => {
             const box = document.getElementById('video-box');
             const container = document.getElementById('twitch-container');
+            const chevron = document.getElementById('video-chevron');
+            
             box.classList.toggle('hidden');
             
-            if (!box.classList.contains('hidden') && container.innerHTML.trim() === "") {
-                const parentDomain = "teams-amber.vercel.app";
-                const channel = "PadresRambletaDelClot";
-                
-                container.innerHTML = `
-                    <iframe 
-                        src="https://player.twitch.tv/?channel=${channel}&parent=${parentDomain}&muted=true&autoplay=true" 
-                        allowfullscreen="true" 
-                        scrolling="no" 
-                        height="100%" 
-                        width="100%">
-                    </iframe>`;
+            if (!box.classList.contains('hidden')) {
+                chevron.style.transform = 'rotate(180deg)';
+                // Solo inyectamos el iframe si no existe ya uno dentro
+                if (container.querySelector('iframe') === null) {
+                    const channel = "PadresRambletaDelClot";
+                    const parent = "teams-amber.vercel.app"; // Dominio de tu Vercel
+                    
+                    container.innerHTML = `
+                        <iframe 
+                            src="https://player.twitch.tv/?channel=${channel}&parent=${parent}&muted=false&autoplay=true" 
+                            allowfullscreen="true" 
+                            scrolling="no" 
+                            height="100%" 
+                            width="100%">
+                        </iframe>`;
+                }
+            } else {
+                chevron.style.transform = 'rotate(0deg)';
             }
         };
 
@@ -184,7 +193,7 @@
                 gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.4);
                 osc.start(audioCtx.currentTime);
                 osc.stop(audioCtx.currentTime + 0.4);
-                if (navigator.vibrate) navigator.vibrate();
+                if (navigator.vibrate) navigator.vibrate(200);
                 await new Promise(r => setTimeout(r, 500));
             }
         }
@@ -220,7 +229,7 @@
                     if (user) initSync();
                     else signInAnonymously(auth).catch(() => initSync());
                 });
-            } catch (e) { document.getElementById('status-text').innerText = "Error Config"; }
+            } catch (e) { document.getElementById('status-text').innerText = "Error Sync"; }
         };
 
         const initSync = () => {
@@ -277,7 +286,7 @@
         };
 
         window.resetMatch = async () => {
-            if(confirm("¿Resetear?")) {
+            if(confirm("¿Resetear marcador y tiempo?")) {
                 await setDoc(matchDoc, { scoreY: 0, scoreO: 0, seconds: 0, running: false, lastUpd: Date.now() });
             }
         };
