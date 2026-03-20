@@ -14,7 +14,7 @@
         body.is-admin .viewer-only { display: none; }
         .score-font { font-variant-numeric: tabular-nums; }
         .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; background: #000; border-radius: 1rem; }
-        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
         @keyframes pulse-red {
             0%, 100% { background-color: white; }
             50% { background-color: #fee2e2; }
@@ -40,18 +40,24 @@
 
     <main class="max-w-md mx-auto p-4 space-y-4">
         
-        <!-- Streaming -->
+        <!-- Streaming Twitch -->
         <div class="bg-slate-800 rounded-[2rem] overflow-hidden shadow-lg border border-slate-700">
             <button onclick="document.getElementById('video-box').classList.toggle('hidden')" class="w-full p-4 flex justify-between items-center text-white">
                 <div class="flex items-center gap-2">
-                    <i data-lucide="video" class="w-4 h-4 text-red-500"></i>
-                    <span class="text-[10px] font-black uppercase tracking-widest">Ver en Directo</span>
+                    <i data-lucide="video" class="w-4 h-4 text-purple-400"></i>
+                    <span class="text-[10px] font-black uppercase tracking-widest">En directo desde Twitch</span>
                 </div>
                 <i data-lucide="chevron-down" class="w-4 h-4"></i>
             </button>
             <div id="video-box" class="p-4 pt-0 hidden">
-                <div class="video-container"> https://www.twitch.tv/PadresRambletaDelClot?sr=a
-                    <div class="absolute inset-0 flex items-center justify-center text-slate-500 text-[10px] uppercase font-bold">Sin señal de video</div>
+                <div class="video-container">
+                    <iframe 
+                        src="https://player.twitch.tv/?channel=PadresRambletaDelClot&parent=window.location.hostname" 
+                        allowfullscreen="true" 
+                        scrolling="no" 
+                        height="100%" 
+                        width="100%">
+                    </iframe>
                 </div>
             </div>
         </div>
@@ -135,45 +141,34 @@
             appId: "1:690933795763:web:55575fe946d21ee86959c6"
         };
 
-        // Nuevos equipos solicitados
         const playersY = ["Albert g", "Sergi", "Xavi", "Giacomo", "Mike R", "Jordi"];
         const playersO = ["Mikel", "Guillermo", "Hadi Tembo", "Luis", "Joan", "Paco"];
         const PIN_SECRET = "1234";
-        const CHANGE_INTERVAL = 300; // 5 minutos
+        const CHANGE_INTERVAL = 300; 
 
         let db, matchDoc;
         let state = { scoreY: 0, scoreO: 0, seconds: 0, running: false, lastUpd: Date.now() };
         let localSecs = 0;
         let clockInterval = null;
 
-        // --- SISTEMA DE AUDIO PERSISTENTE ---
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         
         async function playSiren() {
             if (audioCtx.state === 'suspended') await audioCtx.resume();
-            
-            // Secuencia de 5 pitidos de sirena
             for(let i=0; i<5; i++) {
                 const osc = audioCtx.createOscillator();
                 const gain = audioCtx.createGain();
-                
                 osc.connect(gain);
                 gain.connect(audioCtx.destination);
-                
-                osc.type = "square"; // Sonido más agresivo que 'sine'
-                osc.frequency.setValueAtTime(880, audioCtx.currentTime); // La
-                osc.frequency.exponentialRampToValueAtTime(1320, audioCtx.currentTime + 0.2); // Mi (hacia arriba)
-                
+                osc.type = "square";
+                osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(1320, audioCtx.currentTime + 0.2);
                 gain.gain.setValueAtTime(0, audioCtx.currentTime);
                 gain.gain.linearRampToValueAtTime(0.5, audioCtx.currentTime + 0.05);
                 gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.4);
-                
                 osc.start(audioCtx.currentTime);
                 osc.stop(audioCtx.currentTime + 0.4);
-                
-                // Vibración para móviles Android
-                if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
-                
+                if (navigator.vibrate) navigator.vibrate();
                 await new Promise(r => setTimeout(r, 500));
             }
         }
@@ -182,7 +177,6 @@
             const m = Math.floor(s / 60).toString().padStart(2, '0');
             const sc = (s % 60).toString().padStart(2, '0');
             document.getElementById('timer').innerText = `${m}:${sc}`;
-            
             const rotations = Math.floor(s / CHANGE_INTERVAL);
             drawTeam('list-y', playersY, rotations, 'yellow');
             drawTeam('list-o', playersO, rotations, 'orange');
@@ -230,7 +224,6 @@
                         localSecs = state.seconds;
                         stopTimer();
                         render(localSecs);
-                        // Mostrar alerta visual si está parado justo en el minuto de cambio
                         if (localSecs > 0 && localSecs % CHANGE_INTERVAL === 0) {
                             document.getElementById('timer-alert').classList.remove('hidden');
                             document.getElementById('timer-box').classList.add('timer-alert-active');
@@ -274,16 +267,10 @@
         };
 
         function startTimer() {
-            const b = document.getElementById('btn-play');
-            if(b) {
-                b.innerHTML = '<i data-lucide="pause" class="w-5 h-5 fill-current"></i> Pausar';
-                b.classList.replace('bg-indigo-600', 'bg-red-500');
-            }
             if(clockInterval) clearInterval(clockInterval);
             clockInterval = setInterval(() => { 
                 localSecs++; 
                 render(localSecs); 
-                
                 if (localSecs > 0 && localSecs % CHANGE_INTERVAL === 0) {
                     if (document.body.classList.contains('is-admin')) {
                         playSiren();
@@ -291,18 +278,11 @@
                     }
                 }
             }, 1000);
-            lucide.createIcons();
         }
 
         function stopTimer() {
-            const b = document.getElementById('btn-play');
-            if(b) {
-                b.innerHTML = '<i data-lucide="play" class="w-5 h-5 fill-current"></i> Iniciar';
-                b.classList.replace('bg-red-500', 'bg-indigo-600');
-            }
             if(clockInterval) clearInterval(clockInterval);
             clockInterval = null;
-            lucide.createIcons();
         }
 
         render(0);
