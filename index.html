@@ -39,6 +39,24 @@
 
     <main class="max-w-md mx-auto p-4 space-y-4">
         
+        <!-- SECCIÓN TWITCH RESTAURADA -->
+        <div class="bg-slate-800 rounded-[2rem] overflow-hidden shadow-lg border border-slate-700">
+            <button onclick="toggleVideo()" class="w-full p-4 flex justify-between items-center text-white">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="video" class="w-4 h-4 text-purple-400"></i>
+                    <span class="text-[10px] font-black uppercase tracking-widest">En directo desde Twitch</span>
+                </div>
+                <i data-lucide="chevron-down" class="w-4 h-4 transition-transform duration-300" id="video-chevron"></i>
+            </button>
+            <div id="video-box" class="p-4 pt-0 hidden">
+                <div class="video-container" id="twitch-container">
+                    <div class="absolute inset-0 flex items-center justify-center text-slate-500 text-xs font-bold uppercase tracking-widest">
+                        Cargando stream...
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Marcador Principal -->
         <div class="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-200" id="main-scoreboard">
             <div class="flex justify-between items-center text-center">
@@ -129,6 +147,24 @@
         let localSecs = 0;
         let clockInterval = null;
 
+        // FUNCIONALIDAD TWITCH RESTAURADA
+        window.toggleVideo = () => {
+            const box = document.getElementById('video-box');
+            const container = document.getElementById('twitch-container');
+            const chevron = document.getElementById('video-chevron');
+            box.classList.toggle('hidden');
+            if (!box.classList.contains('hidden')) {
+                chevron.style.transform = 'rotate(180deg)';
+                if (container.querySelector('iframe') === null) {
+                    const channel = "PadresRambletaDelClot";
+                    const parent = window.location.hostname;
+                    container.innerHTML = `<iframe src="https://player.twitch.tv/?channel=${channel}&parent=${parent}&muted=false&autoplay=true" allowfullscreen="true" scrolling="no" height="100%" width="100%"></iframe>`;
+                }
+            } else {
+                chevron.style.transform = 'rotate(0deg)';
+            }
+        };
+
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         
         async function playSiren() {
@@ -160,7 +196,6 @@
             drawTeam('list-y', playersY, rotations, 'yellow');
             drawTeam('list-o', playersO, rotations, 'orange');
             
-            // UI del botón según estado de la BD
             const btnPlay = document.getElementById('btn-play');
             const btnText = document.getElementById('btn-text');
             const btnIcon = document.getElementById('btn-icon');
@@ -222,7 +257,6 @@
                     } else {
                         localSecs = state.seconds;
                         stopTimer();
-                        // Alerta visual si estamos exactamente en el punto de cambio
                         if (localSecs > 0 && localSecs % CHANGE_INTERVAL === 0) {
                             document.getElementById('timer-alert').classList.remove('hidden');
                             document.getElementById('timer-box').classList.add('timer-alert-active');
@@ -247,7 +281,7 @@
                 document.getElementById('admin-badge').classList.remove('hidden');
                 if (audioCtx.state === 'suspended') audioCtx.resume();
             } else {
-                alert("PIN incorrecto. Prueba con 1234");
+                alert("PIN 1234");
             }
         };
 
@@ -268,7 +302,7 @@
         };
 
         window.resetMatch = async () => {
-            const proceed = confirm("¿Estás seguro de reiniciar el marcador y el tiempo a cero?");
+            const proceed = confirm("¿Reiniciar marcador y tiempo?");
             if(proceed && matchDoc) {
                 stopTimer();
                 localSecs = 0;
@@ -287,7 +321,6 @@
             clockInterval = setInterval(() => { 
                 localSecs++; 
                 render(localSecs); 
-                // Auto-pausa y sirena solo para el Admin cada 5 min
                 if (localSecs > 0 && localSecs % CHANGE_INTERVAL === 0) {
                     if (document.body.classList.contains('is-admin')) {
                         playSiren();
