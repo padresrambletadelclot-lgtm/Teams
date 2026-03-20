@@ -50,7 +50,6 @@
             </button>
             <div id="video-box" class="p-4 pt-0 hidden">
                 <div class="video-container" id="twitch-container">
-                    <!-- El JavaScript inyectará el iframe aquí usando el canal PadresRambletaDelClot -->
                     <div class="absolute inset-0 flex items-center justify-center text-slate-500 text-xs font-bold uppercase tracking-widest">
                         Cargando stream...
                     </div>
@@ -88,7 +87,7 @@
             
             <div class="admin-only w-full gap-3 mt-4">
                 <button id="btn-play" onclick="toggleClock()" class="flex-1 h-14 bg-indigo-600 text-white rounded-2xl font-black uppercase text-sm tracking-widest shadow-lg flex items-center justify-center gap-3">
-                    <i data-lucide="play" class="w-5 h-5 fill-current"></i> Iniciar
+                    <i id="btn-icon" data-lucide="play" class="w-5 h-5 fill-current"></i> <span id="btn-text">Iniciar</span>
                 </button>
                 <button onclick="resetMatch()" class="w-14 h-14 bg-slate-100 text-slate-400 rounded-2xl flex items-center justify-center border border-slate-200">
                     <i data-lucide="rotate-ccw" class="w-6 h-6"></i>
@@ -137,8 +136,8 @@
             appId: "1:690933795763:web:55575fe946d21ee86959c6"
         };
 
-        const playersY = ["Michele", "Joan", "Mike R", "Pako", "Jordi", "Gabri"];
-        const playersO = ["Luis", "Giacomo", "David", "Victor", "Albert C", "Hugo"];
+        const playersY = ["Albert g", "Sergi", "Xavi", "Giacomo", "Mike R", "Jordi"];
+        const playersO = ["Mikel", "Guillermo", "Hadi Tembo", "Luis", "Joan", "Paco"];
         const PIN_SECRET = "1234";
         const CHANGE_INTERVAL = 300; 
 
@@ -147,29 +146,17 @@
         let localSecs = 0;
         let clockInterval = null;
 
-        // Esta función maneja la carga del vídeo cuando se pulsa el botón
         window.toggleVideo = () => {
             const box = document.getElementById('video-box');
             const container = document.getElementById('twitch-container');
             const chevron = document.getElementById('video-chevron');
-            
             box.classList.toggle('hidden');
-            
             if (!box.classList.contains('hidden')) {
                 chevron.style.transform = 'rotate(180deg)';
-                // Solo inyectamos el iframe si no existe ya uno dentro
                 if (container.querySelector('iframe') === null) {
                     const channel = "PadresRambletaDelClot";
-                    const parent = "teams-amber.vercel.app"; // Dominio de tu Vercel
-                    
-                    container.innerHTML = `
-                        <iframe 
-                            src="https://player.twitch.tv/?channel=${channel}&parent=${parent}&muted=false&autoplay=true" 
-                            allowfullscreen="true" 
-                            scrolling="no" 
-                            height="100%" 
-                            width="100%">
-                        </iframe>`;
+                    const parent = "teams-amber.vercel.app";
+                    container.innerHTML = `<iframe src="https://player.twitch.tv/?channel=${channel}&parent=${parent}&muted=false&autoplay=true" allowfullscreen="true" scrolling="no" height="100%" width="100%"></iframe>`;
                 }
             } else {
                 chevron.style.transform = 'rotate(0deg)';
@@ -205,6 +192,17 @@
             const rotations = Math.floor(s / CHANGE_INTERVAL);
             drawTeam('list-y', playersY, rotations, 'yellow');
             drawTeam('list-o', playersO, rotations, 'orange');
+            
+            // Actualizar botón de control
+            const btnText = document.getElementById('btn-text');
+            const btnIcon = document.getElementById('btn-icon');
+            if (state.running) {
+                btnText.innerText = "Pausar";
+                btnIcon.setAttribute('data-lucide', 'pause');
+            } else {
+                btnText.innerText = "Iniciar";
+                btnIcon.setAttribute('data-lucide', 'play');
+            }
             lucide.createIcons();
         };
 
@@ -248,15 +246,17 @@
                     } else {
                         localSecs = state.seconds;
                         stopTimer();
-                        render(localSecs);
                         if (localSecs > 0 && localSecs % CHANGE_INTERVAL === 0) {
                             document.getElementById('timer-alert').classList.remove('hidden');
                             document.getElementById('timer-box').classList.add('timer-alert-active');
                         }
                     }
+                    render(localSecs);
                     document.getElementById('status-dot').className = "w-2 h-2 rounded-full bg-green-500 animate-pulse";
                     document.getElementById('status-text').innerText = "Sincronizado";
                 } else { setDoc(matchDoc, state); }
+            }, (error) => {
+                document.getElementById('status-text').innerText = "Error DB";
             });
         };
 
@@ -315,3 +315,4 @@
     </script>
 </body>
 </html>
+
