@@ -42,7 +42,7 @@
         
         <!-- Streaming Twitch -->
         <div class="bg-slate-800 rounded-[2rem] overflow-hidden shadow-lg border border-slate-700">
-            <button onclick="document.getElementById('video-box').classList.toggle('hidden')" class="w-full p-4 flex justify-between items-center text-white">
+            <button onclick="toggleVideo()" class="w-full p-4 flex justify-between items-center text-white">
                 <div class="flex items-center gap-2">
                     <i data-lucide="video" class="w-4 h-4 text-purple-400"></i>
                     <span class="text-[10px] font-black uppercase tracking-widest">En directo desde Twitch</span>
@@ -50,17 +50,12 @@
                 <i data-lucide="chevron-down" class="w-4 h-4"></i>
             </button>
             <div id="video-box" class="p-4 pt-0 hidden">
-                <div class="video-container">
-                    <iframe 
-                        src="https://player.twitch.tv/?channel=PadresRambletaDelClot&parent=window.location.hostname" 
-                        allowfullscreen="true" 
-                        scrolling="no" 
-                        height="100%" 
-                        width="100%">
-                    </iframe>
+                <div class="video-container" id="twitch-container">
+                    <!-- El iframe se genera por JS para incluir el parent dinámico -->
                 </div>
             </div>
         </div>
+
 
         <!-- Marcador Principal -->
         <div class="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-200" id="main-scoreboard">
