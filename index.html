@@ -136,8 +136,10 @@
             appId: "1:690933795763:web:55575fe946d21ee86959c6"
         };
 
-        const playersY = ["Albert g", "Sergi", "Xavi", "Giacomo", "Mike R", "Jordi"];
-        const playersO = ["Mikel", "Guillermo", "Hadi Tembo", "Luis", "Joan", "Paco"];
+        // Nuevos equipos actualizados
+        const playersY = ["Michele", "Joan", "Mike r", "Paco", "Jordi", "Gabri"];
+        const playersO = ["Luis", "Giacomo", "David", "Victor", "Albert C", "Hugo"];
+        
         const PIN_SECRET = "1234";
         const CHANGE_INTERVAL = 300; 
 
@@ -193,7 +195,6 @@
             drawTeam('list-y', playersY, rotations, 'yellow');
             drawTeam('list-o', playersO, rotations, 'orange');
             
-            // Actualizar botón de control
             const btnText = document.getElementById('btn-text');
             const btnIcon = document.getElementById('btn-icon');
             if (state.running) {
