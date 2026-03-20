@@ -145,19 +145,19 @@
         let localSecs = 0;
         let clockInterval = null;
 
-        // Función optimizada para el dominio teams-amber.vercel.app
+        // Función configurada específicamente para el canal y el dominio vercel
         window.toggleVideo = () => {
             const box = document.getElementById('video-box');
             const container = document.getElementById('twitch-container');
             box.classList.toggle('hidden');
             
             if (!box.classList.contains('hidden') && container.innerHTML.trim() === "") {
-                // Dominio principal configurado para Twitch
                 const parentDomain = "teams-amber.vercel.app";
+                const channel = "PadresRambletaDelClot";
                 
                 container.innerHTML = `
                     <iframe 
-                        src="https://player.twitch.tv/?channel=PadresRambletaDelClot&parent=${parentDomain}&muted=true&autoplay=true" 
+                        src="https://player.twitch.tv/?channel=${channel}&parent=${parentDomain}&muted=true&autoplay=true" 
                         allowfullscreen="true" 
                         scrolling="no" 
                         height="100%" 
