@@ -39,24 +39,6 @@
 
     <main class="max-w-md mx-auto p-4 space-y-4">
         
-        <!-- Streaming Twitch -->
-        <div class="bg-slate-800 rounded-[2rem] overflow-hidden shadow-lg border border-slate-700">
-            <button onclick="toggleVideo()" class="w-full p-4 flex justify-between items-center text-white">
-                <div class="flex items-center gap-2">
-                    <i data-lucide="video" class="w-4 h-4 text-purple-400"></i>
-                    <span class="text-[10px] font-black uppercase tracking-widest">En directo desde Twitch</span>
-                </div>
-                <i data-lucide="chevron-down" class="w-4 h-4" id="video-chevron"></i>
-            </button>
-            <div id="video-box" class="p-4 pt-0 hidden">
-                <div class="video-container" id="twitch-container">
-                    <div class="absolute inset-0 flex items-center justify-center text-slate-500 text-xs font-bold uppercase tracking-widest">
-                        Cargando stream...
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- Marcador Principal -->
         <div class="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-200" id="main-scoreboard">
             <div class="flex justify-between items-center text-center">
@@ -86,10 +68,10 @@
             <div id="timer-alert" class="h-6 text-red-600 font-black text-xs uppercase tracking-[0.2em] hidden">⚠️ CAMBIO DE JUGADORES ⚠️</div>
             
             <div class="admin-only w-full gap-3 mt-4">
-                <button id="btn-play" onclick="toggleClock()" class="flex-1 h-14 bg-indigo-600 text-white rounded-2xl font-black uppercase text-sm tracking-widest shadow-lg flex items-center justify-center gap-3">
+                <button id="btn-play" onclick="toggleClock()" class="flex-1 h-14 bg-indigo-600 text-white rounded-2xl font-black uppercase text-sm tracking-widest shadow-lg flex items-center justify-center gap-3 transition-colors duration-300">
                     <i id="btn-icon" data-lucide="play" class="w-5 h-5 fill-current"></i> <span id="btn-text">Iniciar</span>
                 </button>
-                <button onclick="resetMatch()" class="w-14 h-14 bg-slate-100 text-slate-400 rounded-2xl flex items-center justify-center border border-slate-200">
+                <button onclick="resetMatch()" class="w-14 h-14 bg-slate-100 text-slate-400 rounded-2xl flex items-center justify-center border border-slate-200 hover:bg-slate-200 transition-colors">
                     <i data-lucide="rotate-ccw" class="w-6 h-6"></i>
                 </button>
             </div>
@@ -136,7 +118,6 @@
             appId: "1:690933795763:web:55575fe946d21ee86959c6"
         };
 
-        // Nuevos equipos actualizados
         const playersY = ["Michele", "Joan", "Mike r", "Paco", "Jordi", "Gabri"];
         const playersO = ["Luis", "Giacomo", "David", "Victor", "Albert C", "Hugo"];
         
@@ -148,28 +129,11 @@
         let localSecs = 0;
         let clockInterval = null;
 
-        window.toggleVideo = () => {
-            const box = document.getElementById('video-box');
-            const container = document.getElementById('twitch-container');
-            const chevron = document.getElementById('video-chevron');
-            box.classList.toggle('hidden');
-            if (!box.classList.contains('hidden')) {
-                chevron.style.transform = 'rotate(180deg)';
-                if (container.querySelector('iframe') === null) {
-                    const channel = "PadresRambletaDelClot";
-                    const parent = "teams-amber.vercel.app";
-                    container.innerHTML = `<iframe src="https://player.twitch.tv/?channel=${channel}&parent=${parent}&muted=false&autoplay=true" allowfullscreen="true" scrolling="no" height="100%" width="100%"></iframe>`;
-                }
-            } else {
-                chevron.style.transform = 'rotate(0deg)';
-            }
-        };
-
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         
         async function playSiren() {
             if (audioCtx.state === 'suspended') await audioCtx.resume();
-            for(let i=0; i<5; i++) {
+            for(let i=0; i<3; i++) {
                 const osc = audioCtx.createOscillator();
                 const gain = audioCtx.createGain();
                 osc.connect(gain);
@@ -191,18 +155,26 @@
             const m = Math.floor(s / 60).toString().padStart(2, '0');
             const sc = (s % 60).toString().padStart(2, '0');
             document.getElementById('timer').innerText = `${m}:${sc}`;
+            
             const rotations = Math.floor(s / CHANGE_INTERVAL);
             drawTeam('list-y', playersY, rotations, 'yellow');
             drawTeam('list-o', playersO, rotations, 'orange');
             
+            // UI del botón según estado de la BD
+            const btnPlay = document.getElementById('btn-play');
             const btnText = document.getElementById('btn-text');
             const btnIcon = document.getElementById('btn-icon');
+            
             if (state.running) {
                 btnText.innerText = "Pausar";
                 btnIcon.setAttribute('data-lucide', 'pause');
+                btnPlay.classList.remove('bg-indigo-600');
+                btnPlay.classList.add('bg-rose-600');
             } else {
                 btnText.innerText = "Iniciar";
                 btnIcon.setAttribute('data-lucide', 'play');
+                btnPlay.classList.remove('bg-rose-600');
+                btnPlay.classList.add('bg-indigo-600');
             }
             lucide.createIcons();
         };
@@ -215,7 +187,10 @@
                 let role = i===2 ? '🧤' : (i===5 ? '🪑' : (i===0 ? '⬇️' : '🏃'));
                 let bg = i===5 ? 'bg-slate-50 opacity-40 grayscale' : 'bg-white shadow-sm';
                 if(i===2) bg = color === 'yellow' ? 'bg-yellow-50 border-yellow-200' : 'bg-orange-50 border-orange-200';
-                return `<div class="p-3 rounded-xl border border-slate-100 ${bg} flex items-center justify-between text-[11px] font-bold text-slate-700"><span>${name}</span><span>${role}</span></div>`;
+                return `<div class="p-4 rounded-xl border border-slate-100 ${bg} flex items-center justify-between text-sm font-bold text-slate-800">
+                    <span>${name}</span>
+                    <span class="text-lg">${role}</span>
+                </div>`;
             }).join('');
         };
 
@@ -226,7 +201,7 @@
                 const auth = getAuth(app);
                 onAuthStateChanged(auth, (user) => {
                     if (user) initSync();
-                    else signInAnonymously(auth).catch(() => initSync());
+                    else signInAnonymously(auth).then(() => initSync()).catch(() => initSync());
                 });
             } catch (e) { document.getElementById('status-text').innerText = "Error Sync"; }
         };
@@ -247,17 +222,21 @@
                     } else {
                         localSecs = state.seconds;
                         stopTimer();
+                        // Alerta visual si estamos exactamente en el punto de cambio
                         if (localSecs > 0 && localSecs % CHANGE_INTERVAL === 0) {
                             document.getElementById('timer-alert').classList.remove('hidden');
                             document.getElementById('timer-box').classList.add('timer-alert-active');
+                        } else {
+                            document.getElementById('timer-box').classList.remove('timer-alert-active');
+                            document.getElementById('timer-alert').classList.add('hidden');
                         }
                     }
                     render(localSecs);
                     document.getElementById('status-dot').className = "w-2 h-2 rounded-full bg-green-500 animate-pulse";
-                    document.getElementById('status-text').innerText = "Sincronizado";
-                } else { setDoc(matchDoc, state); }
-            }, (error) => {
-                document.getElementById('status-text').innerText = "Error DB";
+                    document.getElementById('status-text').innerText = "En vivo";
+                } else { 
+                    setDoc(matchDoc, state); 
+                }
             });
         };
 
@@ -267,7 +246,9 @@
                 document.getElementById('login-container').innerHTML = `<p class="text-center w-full font-black text-indigo-600 text-[10px] uppercase tracking-widest">✅ MODO CONTROLER ACTIVADO</p>`;
                 document.getElementById('admin-badge').classList.remove('hidden');
                 if (audioCtx.state === 'suspended') audioCtx.resume();
-            } else alert("PIN 1234");
+            } else {
+                alert("PIN incorrecto. Prueba con 1234");
+            }
         };
 
         window.updateScore = async (t, v) => {
@@ -287,8 +268,17 @@
         };
 
         window.resetMatch = async () => {
-            if(confirm("¿Resetear marcador y tiempo?")) {
-                await setDoc(matchDoc, { scoreY: 0, scoreO: 0, seconds: 0, running: false, lastUpd: Date.now() });
+            const proceed = confirm("¿Estás seguro de reiniciar el marcador y el tiempo a cero?");
+            if(proceed && matchDoc) {
+                stopTimer();
+                localSecs = 0;
+                await setDoc(matchDoc, { 
+                    scoreY: 0, 
+                    scoreO: 0, 
+                    seconds: 0, 
+                    running: false, 
+                    lastUpd: Date.now() 
+                });
             }
         };
 
@@ -297,6 +287,7 @@
             clockInterval = setInterval(() => { 
                 localSecs++; 
                 render(localSecs); 
+                // Auto-pausa y sirena solo para el Admin cada 5 min
                 if (localSecs > 0 && localSecs % CHANGE_INTERVAL === 0) {
                     if (document.body.classList.contains('is-admin')) {
                         playSiren();
