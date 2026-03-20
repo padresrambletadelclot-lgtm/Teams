@@ -51,11 +51,10 @@
             </button>
             <div id="video-box" class="p-4 pt-0 hidden">
                 <div class="video-container" id="twitch-container">
-                    <!-- El iframe se genera por JS para incluir el parent dinámico -->
+                    <!-- El iframe se genera dinámicamente -->
                 </div>
             </div>
         </div>
-
 
         <!-- Marcador Principal -->
         <div class="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-200" id="main-scoreboard">
@@ -145,6 +144,27 @@
         let state = { scoreY: 0, scoreO: 0, seconds: 0, running: false, lastUpd: Date.now() };
         let localSecs = 0;
         let clockInterval = null;
+
+        // Función optimizada para el dominio teams-amber.vercel.app
+        window.toggleVideo = () => {
+            const box = document.getElementById('video-box');
+            const container = document.getElementById('twitch-container');
+            box.classList.toggle('hidden');
+            
+            if (!box.classList.contains('hidden') && container.innerHTML.trim() === "") {
+                // Dominio principal configurado para Twitch
+                const parentDomain = "teams-amber.vercel.app";
+                
+                container.innerHTML = `
+                    <iframe 
+                        src="https://player.twitch.tv/?channel=PadresRambletaDelClot&parent=${parentDomain}&muted=true&autoplay=true" 
+                        allowfullscreen="true" 
+                        scrolling="no" 
+                        height="100%" 
+                        width="100%">
+                    </iframe>`;
+            }
+        };
 
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         
