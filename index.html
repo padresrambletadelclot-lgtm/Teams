@@ -47,14 +47,15 @@
                     <i data-lucide="video" class="w-4 h-4 text-purple-400"></i>
                     <span class="text-[10px] font-black uppercase tracking-widest">En directo desde Twitch</span>
                 </div>
-                <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                <i data-lucide="chevron-down" class="w-4 h-4" id="video-chevron"></i>
             </button>
             <div id="video-box" class="p-4 pt-0 hidden">
                 <div class="video-container" id="twitch-container">
-                    <!-- El iframe se genera dinámicamente -->
+                    <!-- El iframe se cargará aquí al pulsar el botón -->
                 </div>
             </div>
         </div>
+
 
         <!-- Marcador Principal -->
         <div class="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-200" id="main-scoreboard">
